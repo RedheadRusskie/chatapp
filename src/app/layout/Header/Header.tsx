@@ -2,12 +2,28 @@
 
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { Box, Flex, Spacer } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Spacer,
+  WrapItem,
+} from "@chakra-ui/react";
 import logo from "../../../../public/assets/logo.png";
 import { Text } from "@chakra-ui/react";
+import { PhoneIcon, AddIcon, WarningIcon } from "@chakra-ui/icons";
+
+import styles from "./Header.module.scss";
+import { AvatarMenu } from "@/app/components/AvatarMenu/AvatarMenu";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
+  const user = session?.user;
 
   return (
     <Flex
@@ -16,40 +32,28 @@ const Navbar: React.FC = () => {
       align="center"
       justify="space-between"
       padding="5"
-      backgroundColor="#131029"
+      backgroundColor="var(--bg-main)"
     >
-      <Box display="flex" alignItems="center" gap="0.5em">
+      <Box
+        paddingLeft="3em"
+        userSelect="none"
+        display="flex"
+        alignItems="center"
+        gap="0.5em"
+      >
         <Image
+          className={styles.image}
           src={logo}
           alt="Logo"
           width={50}
           height={50}
-          style={{
-            pointerEvents: "none",
-            marginLeft: "3em",
-            userSelect: "none",
-          }}
         />
         <Text fontSize="1.5rem" fontWeight={800} color="#fff">
           MyChat
         </Text>
       </Box>
       <Spacer />
-      {session?.user ? (
-        <Box>
-          {session.user.image && (
-            <Image
-              src={session.user.image}
-              alt="User Avatar"
-              style={{ marginRight: "3em", borderRadius: "100%" }}
-              width={45}
-              height={45}
-            />
-          )}
-        </Box>
-      ) : (
-        <Box>{/* Render a default avatar or sign in button */}</Box>
-      )}
+      <AvatarMenu session={session} />
     </Flex>
   );
 };
