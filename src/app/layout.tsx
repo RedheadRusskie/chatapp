@@ -20,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <link rel="icon" href="/icon.ico" sizes="any" />
         <SessionProvider>
           <Header />
           <MainLayout>{children}</MainLayout>

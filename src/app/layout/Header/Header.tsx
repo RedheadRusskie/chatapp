@@ -31,7 +31,6 @@ const Navbar: React.FC = () => {
       height="80px"
       align="center"
       justify="space-between"
-      padding="5"
       backgroundColor="var(--bg-main)"
     >
       <Box

@@ -15,6 +15,7 @@ export const AvatarMenu: React.FC<AvatarMenuProps> = ({ session }) => {
         cursor="pointer"
         // Required
         borderRadius="100%"
+        paddingTop="0.2em"
         marginTop="0.2em"
         width="3em"
         name={session?.user?.name as string}
@@ -22,8 +23,9 @@ export const AvatarMenu: React.FC<AvatarMenuProps> = ({ session }) => {
       />
     </Box>
   ) : (
-    <Box paddingRight="3em">
+    <Box paddingRight="3em" paddingTop="0.2em">
       <Avatar
+        className={styles.avatar}
         borderRadius="100%"
         marginTop="0.2em"
         width="3em"
