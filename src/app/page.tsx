@@ -1,9 +1,9 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useAddNewUser } from "./hooks/useAddNewUser";
 
 export default function Home() {
-  const { data: session } = useSession();
+  useAddNewUser();
 
   return <></>;
 }
