@@ -31,8 +31,6 @@ export async function POST() {
     const session = await getServerSession();
     const sessionUser = session?.user;
 
-    console.log("test", sessionUser);
-
     const userExists = await prisma.user.findUnique({
       where: {
         email: sessionUser!.email as string,
