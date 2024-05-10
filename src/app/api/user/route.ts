@@ -1,4 +1,4 @@
-import prisma from "@/app/utils/prisma/db";
+import prisma from "@/utils/prisma/db";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { Config, uniqueUsernameGenerator } from "unique-username-generator";

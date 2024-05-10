@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { AuthProvider } from "@/app/context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { Box, ChakraProvider } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 

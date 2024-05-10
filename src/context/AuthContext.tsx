@@ -1,3 +1,4 @@
+import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import {
   ReactNode,
@@ -8,8 +9,7 @@ import {
 } from "react";
 
 interface AuthContext {
-  // TODO: Alter type
-  session: any;
+  session: Session;
   loading: boolean;
 }
 
@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [status]);
 
   return (
-    <AuthContext.Provider value={{ session, loading }}>
+    <AuthContext.Provider value={{ session, loading } as AuthContext}>
       {children}
     </AuthContext.Provider>
   );

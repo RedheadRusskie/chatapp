@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import LoginContainer from "../components/LoginForm/LoginContainer";
+import LoginContainer from "../../components/LoginForm/LoginContainer";
 
 const LoginPage = () => {
   const { status } = useSession();

@@ -1,9 +1,9 @@
 "use client";
 
-import { Box, Flex, Input, Textarea } from "@chakra-ui/react";
-import { useAddNewUser } from "./hooks/useAddNewUser";
-import { ConversationSearch } from "./components/ConversationSearch/ConversationSearch";
+import { Box, Flex } from "@chakra-ui/react";
 import { Conversation } from "@prisma/client";
+import { useAddNewUser } from "../lib/hooks";
+import { ConversationSearch } from "../components/ConversationSearch/ConversationSearch";
 
 interface ConversationType extends Partial<Conversation> {}
 

@@ -18,6 +18,7 @@ export default function LoginContainer() {
       const result = await signIn("github", {
         redirect: true,
       });
+
       if (result?.error) {
         console.error("Failed to sign in with GitHub:", result.error);
       }

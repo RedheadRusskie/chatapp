@@ -2,28 +2,14 @@
 
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Spacer,
-  WrapItem,
-} from "@chakra-ui/react";
-import logo from "../../../../public/assets/logo.png";
+import { Box, Flex, Spacer } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
-import { PhoneIcon, AddIcon, WarningIcon } from "@chakra-ui/icons";
-
+import { AvatarMenu } from "@/components/AvatarMenu/AvatarMenu";
 import styles from "./Header.module.scss";
-import { AvatarMenu } from "@/app/components/AvatarMenu/AvatarMenu";
+import logo from "../../../public/assets/logo.png";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
-  const user = session?.user;
 
   return (
     <Flex
