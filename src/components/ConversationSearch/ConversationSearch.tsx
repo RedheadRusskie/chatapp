@@ -22,6 +22,7 @@ export const ConversationSearch = () => {
               outlineWidth: 0,
             }}
             _placeholder={{ color: "var(--light-main)" }}
+            color="#fff"
             variant="unstyled"
             mr="7px"
             placeholder="Search conversations"
