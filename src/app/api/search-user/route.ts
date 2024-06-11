@@ -21,7 +21,13 @@ export async function GET(req: NextRequest) {
         { status: 400 }
       );
 
-    const result = await prisma.user.findMany({
+    const queryResult = await prisma.user.findMany({
+      select: {
+        userID: true,
+        username: true,
+        name: true,
+        profilePicture: true,
+      },
       where: {
         OR: [
           { username: { contains: query, mode: "insensitive" } },
@@ -31,16 +37,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const returnObject = result.map((user) => {
-      return {
-        userId: user.userID,
-        username: user.username,
-        name: user.name,
-        profilePicture: user.profilePicture,
-      };
-    });
-
-    return NextResponse.json({ result: returnObject }, { status: 200 });
+    return NextResponse.json({ queryResult }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error }, { status: 500 });
   }

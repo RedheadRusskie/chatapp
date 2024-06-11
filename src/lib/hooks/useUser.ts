@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { User } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { fetchUserRequest, postUserRequest } from "../shared";
@@ -16,6 +16,8 @@ export const useUser = () => {
   const { data: user, isLoading: isUserLoading } = useQuery<User>({
     queryKey: [userQueryKeys.user],
     queryFn: () => fetchUserRequest(session.data as Session),
+    enabled: !!session,
+    refetchOnMount: false,
   });
 
   const postMutation = useMutation(

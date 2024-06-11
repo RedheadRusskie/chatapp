@@ -1,8 +1,8 @@
 "use client";
 
+import { useAddNewUser } from "@/lib/hooks";
 import { Box, Flex } from "@chakra-ui/react";
-import { useAddNewUser } from "../lib/hooks";
-import { ConversationSearch } from "../components/ConversationSearch/ConversationSearch";
+import { UserSearhSelect } from "@/components/UserSearchSelect/UserSearchSelect";
 
 export default function Home() {
   useAddNewUser();
@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <Flex w="100%" h="100%">
       <Box w="26em" bgColor="#1C173E">
-        <ConversationSearch />
+        <UserSearhSelect />
         <Box overflowY="auto" height="83vh">
           {/* Conversation card here */}
         </Box>
