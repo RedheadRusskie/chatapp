@@ -42,17 +42,19 @@ export const postUserRequest = async (session: Session) => {
 
 export const searchUsersRequest = async (
   session: Session,
-  query: string
+  query: string,
+  page: number
 ): Promise<User[]> => {
   try {
     const response = await axios.get(`${baseEndpoint}/api/search-user`, {
-      params: { query },
+      params: { query, skip: page * 10, take: 10 },
       headers: getAuthHeaders(session),
     });
     return response.data.queryResult;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       const axiosError: AxiosError = error;
+
       throw new Error(axiosError.message);
     } else {
       throw new Error("An unknown error occurred");

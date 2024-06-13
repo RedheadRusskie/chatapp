@@ -16,7 +16,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <QueryClientProvider client={queryClient}>
       <ChakraProvider>
         <AuthProvider>
-          <Box w="100%" h="91vh" backgroundColor="var(--bg-main)">
+          <Box w="100%" h="94.5vh" backgroundColor="var(--bg-main)">
             {children}
           </Box>
         </AuthProvider>

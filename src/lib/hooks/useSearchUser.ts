@@ -1,23 +1,33 @@
-import { User } from "@prisma/client";
-import { useQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 import { searchUsersRequest } from "../shared";
 import { useSession } from "next-auth/react";
-import { Session } from "next-auth";
+import { User } from "@prisma/client";
 import { AxiosError } from "axios";
+import { Session } from "next-auth";
 
 export const useSearchUser = (query: string) => {
   const { data: session } = useSession();
 
-  const {
-    data: usersQueryResult,
-    isLoading: isUsersQueryLoading,
-    error: usersQueryError,
-  } = useQuery<User[], AxiosError>({
-    queryKey: ["userSearchQuery", query],
-    queryFn: () => searchUsersRequest(session as Session, query),
-    enabled: !!session && !!query && query.length > 3,
-    refetchOnMount: false,
-  });
+  const { data, isLoading, error, fetchNextPage, hasNextPage } =
+    useInfiniteQuery<User[], AxiosError>(
+      ["userSearchQuery", query],
+      ({ pageParam = 0 }) =>
+        searchUsersRequest(session as Session, query, pageParam),
+      {
+        enabled: !!session && !!query && query.length > 3,
+        getNextPageParam: (lastPage, allPages) => {
+          if (lastPage.length < 10) return undefined;
 
-  return { usersQueryResult, isUsersQueryLoading, usersQueryError };
+          return allPages.length;
+        },
+      }
+    );
+
+  return {
+    usersQueryResult: data?.pages.flat() || [],
+    isUsersQueryLoading: isLoading,
+    usersQueryError: error,
+    fetchNextPage,
+    hasNextPage,
+  };
 };

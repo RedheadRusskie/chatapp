@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { Center, Flex, Heading, useBreakpointValue } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  Flex,
+  Heading,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { PillButton } from "../PillButton/PillButton";
 
@@ -35,7 +41,7 @@ export default function LoginContainer() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        style={{ width: containerWidth, maxWidth: "1000px", padding: "2em" }}
+        style={{ width: containerWidth, maxWidth: "40em", padding: "2em" }}
       >
         <Heading fontWeight="800" fontSize="5rem" color="#fff" mb="0.5em">
           Sign in

@@ -21,6 +21,9 @@ export async function GET(req: NextRequest) {
         { status: 400 }
       );
 
+    const skip = parseInt(req.nextUrl.searchParams.get("skip") || "0");
+    const take = parseInt(req.nextUrl.searchParams.get("take") || "10");
+
     const queryResult = await prisma.user.findMany({
       select: {
         userID: true,
@@ -35,6 +38,8 @@ export async function GET(req: NextRequest) {
           { name: { contains: query, mode: "insensitive" } },
         ],
       },
+      skip,
+      take,
     });
 
     return NextResponse.json({ queryResult }, { status: 200 });

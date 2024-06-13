@@ -20,8 +20,13 @@ export const UserSearhSelect = () => {
   const searchResultsContainerRef = useRef<HTMLDivElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  const { usersQueryResult, isUsersQueryLoading, usersQueryError } =
-    useSearchUser(query);
+  const {
+    usersQueryResult,
+    isUsersQueryLoading,
+    usersQueryError,
+    fetchNextPage,
+    hasNextPage,
+  } = useSearchUser(query);
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
@@ -55,10 +60,20 @@ export const UserSearhSelect = () => {
     }
   }, [usersQueryError, toast]);
 
+  const handleScroll = () => {
+    if (
+      searchResultsContainerRef.current &&
+      searchResultsContainerRef.current.scrollTop +
+        searchResultsContainerRef.current.clientHeight >=
+        searchResultsContainerRef.current.scrollHeight &&
+      hasNextPage
+    )
+      fetchNextPage();
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     if (event.target.value) {
-      setQuery(event.target.value);
       onOpen();
     } else onClose();
   };
@@ -100,6 +115,8 @@ export const UserSearhSelect = () => {
       {isOpen && usersQueryResult && (
         <Box
           ref={searchResultsContainerRef}
+          maxH="20em"
+          overflowY="scroll"
           position="absolute"
           minH="5em"
           top="9em"
@@ -110,6 +127,7 @@ export const UserSearhSelect = () => {
           zIndex="999"
           left="2.6em"
           backgroundColor="var(--bg-main)"
+          onScroll={handleScroll}
         >
           {!isUsersQueryLoading && usersQueryResult.length === 0 && (
             <Center color="white" pt="1em">
