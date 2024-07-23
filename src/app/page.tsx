@@ -3,6 +3,7 @@
 import { useAddNewUser } from "@/lib/hooks";
 import { Box, Flex } from "@chakra-ui/react";
 import { UserSearhSelect } from "@/components/UserSearchSelect/UserSearchSelect";
+import { ConversationCard } from "@/components/ConversationCard/ConversationCard";
 
 export default function Home() {
   useAddNewUser();
@@ -13,9 +14,10 @@ export default function Home() {
         <UserSearhSelect />
         <Box overflowY="auto" height="83vh">
           {/* Conversation card here */}
+          {/* <ConversationCard /> */}
         </Box>
       </Box>
-      <Box flex="1">{/* Conversation here here */}</Box>
+      <Box flex="1">{/* Conversation here */}</Box>
     </Flex>
   );
 }

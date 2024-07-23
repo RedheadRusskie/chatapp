@@ -9,7 +9,7 @@ export async function GET() {
     const sessionUser = session?.user;
 
     if (!sessionUser)
-      return NextResponse.json({ msg: "Forbidden", status: 401 });
+      return NextResponse.json({ message: "Forbidden", status: 401 });
 
     const user = await prisma.user.findUnique({
       where: {
@@ -18,7 +18,7 @@ export async function GET() {
     });
 
     if (!user)
-      return NextResponse.json({ msg: "User not found" }, { status: 404 });
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
 
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {

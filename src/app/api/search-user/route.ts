@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
     if (!session) {
       return NextResponse.json(
-        { msg: "Sign in to query users." },
+        { message: "Sign in to query users." },
         { status: 401 }
       );
     }
@@ -17,8 +17,8 @@ export async function GET(req: NextRequest) {
 
     if (!query || !(query.length > 3))
       return NextResponse.json(
-        { msg: "Query parameter too short or missing." },
-        { status: 400 }
+        { message: "Query parameter too short or missing." },
+        { status: 406 }
       );
 
     const skip = parseInt(req.nextUrl.searchParams.get("skip") || "0");

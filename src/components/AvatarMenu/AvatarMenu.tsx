@@ -1,5 +1,14 @@
-import { Avatar, Box } from "@chakra-ui/react";
+import { signOut } from "next-auth/react";
 import { Session } from "next-auth";
+import {
+  Avatar,
+  Box,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
+import Cookies from "js-cookie";
 import styles from "./AvatarMenu.module.scss";
 
 interface AvatarMenuProps {
@@ -7,30 +16,32 @@ interface AvatarMenuProps {
 }
 
 export const AvatarMenu: React.FC<AvatarMenuProps> = ({ session }) => {
+  const handleSignOut = () => {
+    Cookies.remove("next-auth.session-token");
+    signOut();
+  };
+
   return session?.user ? (
-    <Box paddingRight="3em">
-      <Avatar
-        className={styles.avatar}
-        // Required
-        cursor="pointer"
-        // Required
-        borderRadius="100%"
-        paddingTop="0.2em"
-        marginTop="0.2em"
-        width="3em"
-        name={session?.user?.name as string}
-        src={session?.user?.image as string}
-      />
+    <Box className={styles.avatarWrapper}>
+      <Menu>
+        <MenuButton>
+          <Avatar
+            className={styles.avatar}
+            // Required
+            borderRadius="100%"
+            src={session?.user?.image as string}
+          />
+        </MenuButton>
+        <MenuList className={styles.menuList}>
+          <MenuItem className={styles.menuItem} onClick={handleSignOut}>
+            Sign out
+          </MenuItem>
+        </MenuList>
+      </Menu>
     </Box>
   ) : (
-    <Box paddingRight="3em" paddingTop="0.2em">
-      <Avatar
-        className={styles.avatar}
-        borderRadius="100%"
-        marginTop="0.2em"
-        width="3em"
-        bg="var(--bg-dark-main)"
-      />
+    <Box className={styles.avatarWrapper}>
+      <Avatar className={styles.avatarEmpty} />
     </Box>
   );
 };

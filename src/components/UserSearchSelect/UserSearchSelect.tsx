@@ -150,7 +150,7 @@ export const UserSearhSelect = () => {
                 borderRadius="10px"
                 key={user.userID}
                 padding="0.5em"
-                _hover={{ backgroundColor: "#1a1638", cursor: "pointer" }}
+                _hover={{ backgroundColor: "var(--hover)", cursor: "pointer" }}
                 onClick={onClose}
               >
                 <Flex gap="0.5em">

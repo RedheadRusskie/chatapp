@@ -1,5 +1,45 @@
-.image {
-  -webkit-user-drag: none;
-  user-select: none;
-  border-radius: 100%;
+.avatarWrapper {
+  padding-right: 3em;
+  padding-top: 0.2em;
+
+  .avatar,
+  .avatarEmpty {
+    border-radius: 100%;
+    cursor: pointer;
+    padding-top: 0.2em;
+    margin-top: 0.2em;
+    width: 3em;
+  }
+
+  .avatarEmpty {
+    background-color: var(--bg-dark-main);
+  }
+}
+
+.menuList {
+  border-radius: 5px;
+  background-color: var(--bg-dark-main);
+  min-width: 6em;
+  padding: 0.3em;
+  color: white;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -27px;
+    right: 9px;
+    border-width: 16px;
+    border-style: solid;
+    border-color: transparent transparent var(--bg-dark-main) transparent;
+  }
+}
+
+.menuItem {
+  transition: 0.2s;
+  padding: 0.5em;
+
+  &:hover {
+    background-color: var(--hover);
+  }
 }
