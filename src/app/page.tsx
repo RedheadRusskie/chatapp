@@ -1,9 +1,10 @@
 "use client";
 
 import { useAddNewUser } from "@/lib/hooks";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, getToken } from "@chakra-ui/react";
 import { UserSearhSelect } from "@/components/UserSearchSelect/UserSearchSelect";
 import { ConversationCard } from "@/components/ConversationCard/ConversationCard";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
   useAddNewUser();

@@ -3,36 +3,45 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql" 
   url      = env("DATABASE_URL")
 }
 
 model User {
-  userID         String         @id @unique @default(uuid())
-  username       String?        @unique
-  email          String         @unique
-  name           String
-  profilePicture String?
-  createdAt      DateTime       @default(now())
-  conversations  Conversation[]
-  messages       Message[]
+  userID            String             @id @default(uuid())
+  username          String             @unique
+  email             String             @unique
+  name              String?
+  profilePicture    String?
+  createdAt         DateTime           @default(now())
+  sentMessages      DirectMessage[]    @relation("Sender")
+  conversations     UserConversation[] @relation("UserConversations")
+}
+
+model DirectMessage {
+  id                String             @id @default(uuid())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  content           String?
+  senderId          String             
+  sender            User               @relation("Sender", fields: [senderId], references: [userID])
+  conversationId    String
+  conversation      Conversation       @relation(fields: [conversationId], references: [id])
+}
+
+model UserConversation {
+  userID            String
+  conversationId    String
+  user              User               @relation("UserConversations", fields: [userID], references: [userID])
+  conversation      Conversation       @relation("ConversationUsers", fields: [conversationId], references: [id])
+
+  @@id([userID, conversationId])
 }
 
 model Conversation {
-  id             String         @id @unique @default(uuid())
-  createdAt      DateTime       @default(now())
-  users          User[]
-  messages       Message[]
-}
-
-model Message {
-  id             String         @id @unique @default(uuid())
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  text           String?
-  image          String?
-  sender         User?          @relation(fields: [senderId], references: [userID])
-  senderId       String?
-  conversation   Conversation?  @relation(fields: [conversationId], references: [id])
-  conversationId String?
+  id                String             @id @default(uuid())
+  createdAt         DateTime           @default(now())
+  lastUpdated       DateTime           @updatedAt @default(now())
+  users             UserConversation[] @relation("ConversationUsers")
+  messages          DirectMessage[]
 }

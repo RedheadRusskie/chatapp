@@ -11,8 +11,7 @@ export const useSearchUser = (query: string) => {
   const { data, isLoading, error, fetchNextPage, hasNextPage } =
     useInfiniteQuery<User[], AxiosError>(
       ["userSearchQuery", query],
-      ({ pageParam = 0 }) =>
-        searchUsersRequest(session as Session, query, pageParam),
+      ({ pageParam = 0 }) => searchUsersRequest(query, pageParam),
       {
         enabled: !!session && !!query && query.length > 3,
         getNextPageParam: (lastPage, allPages) => {
