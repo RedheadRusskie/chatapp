@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  userID            String             @id @default(uuid())
+  userId            String             @id @default(uuid())
   username          String             @unique
   email             String             @unique
   name              String?
@@ -16,6 +16,7 @@ model User {
   createdAt         DateTime           @default(now())
   sentMessages      DirectMessage[]    @relation("Sender")
   conversations     UserConversation[] @relation("UserConversations")
+  active            Boolean            @default(true)
 }
 
 model DirectMessage {
@@ -24,18 +25,18 @@ model DirectMessage {
   updatedAt         DateTime           @updatedAt
   content           String?
   senderId          String             
-  sender            User               @relation("Sender", fields: [senderId], references: [userID])
+  sender            User               @relation("Sender", fields: [senderId], references: [userId])
   conversationId    String
   conversation      Conversation       @relation(fields: [conversationId], references: [id])
 }
 
 model UserConversation {
-  userID            String
+  userId            String
   conversationId    String
-  user              User               @relation("UserConversations", fields: [userID], references: [userID])
+  user              User               @relation("UserConversations", fields: [userId], references: [userId])
   conversation      Conversation       @relation("ConversationUsers", fields: [conversationId], references: [id])
 
-  @@id([userID, conversationId])
+  @@id([userId, conversationId])
 }
 
 model Conversation {

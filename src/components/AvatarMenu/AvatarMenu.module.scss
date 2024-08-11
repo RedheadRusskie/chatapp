@@ -23,6 +23,7 @@
   padding: 0.3em;
   color: white;
   position: relative;
+  border-radius: 30px;
 
   &::before {
     content: "";
@@ -36,6 +37,7 @@
 }
 
 .menuItem {
+  border-radius: 30px;
   transition: 0.2s;
   padding: 0.5em;
 

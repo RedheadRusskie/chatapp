@@ -29,7 +29,7 @@ export const AvatarMenu: React.FC<AvatarMenuProps> = ({ session }) => {
             className={styles.avatar}
             // Required
             borderRadius="100%"
-            src={session?.user?.image as string}
+            src={session?.user?.image || undefined}
           />
         </MenuButton>
         <MenuList className={styles.menuList}>

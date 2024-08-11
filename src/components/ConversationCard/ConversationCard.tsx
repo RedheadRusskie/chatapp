@@ -1,17 +1,32 @@
 import React from "react";
-import Image from "next/image";
 import { Avatar, AvatarBadge, Box, Center, Flex, Text } from "@chakra-ui/react";
-// import { Conversation } from "@prisma/client";
+import { User } from "@prisma/client";
+import dayjs from "dayjs";
 import styles from "./ConversationCard.module.scss";
-import { Conversation } from "@prisma/client";
 
 interface ConversationCardProps {
-  conversation: Conversation;
+  user: Partial<User>;
+  lastMessage: string;
+  updatedAt: string;
 }
 
 export const ConversationCard: React.FC<ConversationCardProps> = ({
-  conversation,
+  user,
+  lastMessage,
+  updatedAt,
 }) => {
+  const formatDate = (isoString: string): string => {
+    const now = dayjs();
+    const messageTime = dayjs(isoString);
+    const hoursDiff = now.diff(messageTime, "hour");
+
+    if (hoursDiff < 24) return messageTime.format("HH:mm");
+    return messageTime.format("DD/MM/YY");
+  };
+
+  const truncateMessage = (message: string) =>
+    message.substring(0, 10).concat("..");
+
   return (
     <Box
       className={styles.conversationCard}
@@ -22,17 +37,25 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
     >
       <Flex height="100%" alignItems="center" padding="0.8em">
         <Box mr="0.8em">
-          <Avatar size="lg">
-            <AvatarBadge boxSize="0.9em" bg="green.500" borderColor="#181437" />
+          <Avatar size="lg" src={user.profilePicture || undefined}>
+            <AvatarBadge
+              boxSize="0.9em"
+              bg={user.active ? "green.500" : "gray.500"}
+              borderColor="#181437"
+              borderWidth="4px"
+            />
           </Avatar>
         </Box>
         <Box>
-          <Text fontWeight={500} fontSize="1.2rem"></Text>
-          <Text color="#6F68A9"></Text>
+          <Flex fontSize="1.1rem" gap="0.5em">
+            <Text>{user.name}</Text>
+            <Text color="#6F68A9">@{user.username}</Text>
+          </Flex>
+          <Text color="#6F68A9">{truncateMessage(lastMessage)}</Text>
         </Box>
-        <Box>
-          <Text marginLeft="2.5em" marginTop="-1.8em"></Text>
-        </Box>
+        <Text marginLeft="8em" marginTop="-1.8em">
+          {formatDate(updatedAt)}
+        </Text>
       </Flex>
     </Box>
   );

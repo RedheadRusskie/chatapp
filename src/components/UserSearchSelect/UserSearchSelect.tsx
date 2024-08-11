@@ -48,17 +48,15 @@ export const UserSearhSelect = () => {
     };
   }, [handleClickOutside, isOpen]);
 
-  useEffect(() => {
-    if (usersQueryError) {
-      toast({
-        title: usersQueryError.message,
-        status: "error",
-        duration: 4000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-  }, [usersQueryError, toast]);
+  if (usersQueryError) {
+    toast({
+      title: usersQueryError.message,
+      status: "error",
+      duration: 4000,
+      isClosable: true,
+      position: "top",
+    });
+  }
 
   const handleScroll = () => {
     if (
@@ -79,7 +77,12 @@ export const UserSearhSelect = () => {
   };
 
   return (
-    <Center h="4em" flexDir="column" backgroundColor="#1C173E">
+    <Center
+      h="4em"
+      flexDir="column"
+      backgroundColor="#1C173E"
+      borderRadius="30px"
+    >
       <Box
         width="80%"
         h="60%"
@@ -118,14 +121,13 @@ export const UserSearhSelect = () => {
           maxH="20em"
           overflowY="scroll"
           position="absolute"
-          minH="5em"
           top="9em"
           minW="20.8em"
           bgColor="white"
           borderRadius="10px"
           boxShadow="0 4px 8px rgba(0, 0, 0, 0.3)"
           zIndex="999"
-          left="2.6em"
+          left="3.5em"
           backgroundColor="var(--bg-main)"
           onScroll={handleScroll}
         >
@@ -148,7 +150,7 @@ export const UserSearhSelect = () => {
                 transition="0.3s"
                 color="white"
                 borderRadius="10px"
-                key={user.userID}
+                key={user.userId}
                 padding="0.5em"
                 _hover={{ backgroundColor: "var(--hover)", cursor: "pointer" }}
                 onClick={onClose}

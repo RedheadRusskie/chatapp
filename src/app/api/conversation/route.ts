@@ -22,7 +22,7 @@ export async function GET() {
 
     const userConversations = await prisma.userConversation.findMany({
       where: {
-        userID: currentUser.userID,
+        userId: currentUser.userId,
       },
       select: {
         conversationId: true,
@@ -32,10 +32,11 @@ export async function GET() {
               select: {
                 user: {
                   select: {
-                    userID: true,
+                    userId: true,
                     username: true,
                     name: true,
                     profilePicture: true,
+                    active: true,
                   },
                 },
               },
@@ -57,17 +58,18 @@ export async function GET() {
 
     const formattedMessagesRO = userConversations.map((userConversation) => {
       const usersExcludingCurrentUser = userConversation.conversation.users
-        .filter((user) => user.user.userID !== currentUser.userID)
+        .filter((user) => user.user.userId !== currentUser.userId)
         .map((user) => ({
-          userID: user.user.userID,
+          userID: user.user.userId,
           username: user.user.username,
           name: user.user.name,
+          active: user.user.active,
           profilePicture: user.user.profilePicture,
         }));
 
       return {
         conversationId: userConversation.conversationId,
-        user: usersExcludingCurrentUser,
+        user: usersExcludingCurrentUser[0],
         lastMessage: userConversation.conversation.messages[0]?.content,
         updatedAt: userConversation.conversation.lastUpdated,
       };

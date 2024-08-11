@@ -3,7 +3,6 @@ import { searchUsersRequest } from "../shared";
 import { useSession } from "next-auth/react";
 import { User } from "@prisma/client";
 import { AxiosError } from "axios";
-import { Session } from "next-auth";
 
 export const useSearchUser = (query: string) => {
   const { data: session } = useSession();

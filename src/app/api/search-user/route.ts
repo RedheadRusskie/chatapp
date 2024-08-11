@@ -13,6 +13,15 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const currentUser = await prisma.user.findFirst({
+      select: {
+        userId: true,
+      },
+      where: {
+        email: session.user?.email as string,
+      },
+    });
+
     const query = req.nextUrl.searchParams.get("query");
 
     if (!query || !(query.length > 3))
@@ -26,7 +35,7 @@ export async function GET(req: NextRequest) {
 
     const queryResult = await prisma.user.findMany({
       select: {
-        userID: true,
+        userId: true,
         username: true,
         name: true,
         profilePicture: true,
@@ -42,7 +51,11 @@ export async function GET(req: NextRequest) {
       take,
     });
 
-    return NextResponse.json({ queryResult }, { status: 200 });
+    const filteredUsers = queryResult.filter(
+      (user) => user.userId !== currentUser?.userId
+    );
+
+    return NextResponse.json({ queryResult: filteredUsers }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: error }, { status: 500 });
   }
