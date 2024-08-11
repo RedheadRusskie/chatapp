@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import { Avatar, AvatarBadge, Box, Center, Flex, Text } from "@chakra-ui/react";
 import { User } from "@prisma/client";
 import dayjs from "dayjs";
@@ -8,12 +8,14 @@ interface ConversationCardProps {
   user: Partial<User>;
   lastMessage: string;
   updatedAt: string;
+  onClick: () => void;
 }
 
 export const ConversationCard: React.FC<ConversationCardProps> = ({
   user,
   lastMessage,
   updatedAt,
+  onClick,
 }) => {
   const formatDate = (isoString: string): string => {
     const now = dayjs();
@@ -30,6 +32,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
   return (
     <Box
       className={styles.conversationCard}
+      onClick={() => onClick()}
       w="100%"
       h="5em"
       bgColor="#181437"

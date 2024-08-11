@@ -1,14 +1,23 @@
 "use client";
 
 import { useAddNewUser, useConversations } from "@/lib/hooks";
-import { Box, Flex, getToken, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  Flex,
+  Spinner,
+  getToken,
+  useToast,
+} from "@chakra-ui/react";
 import { UserSearhSelect } from "@/components/UserSearchSelect/UserSearchSelect";
 import { ConversationCard } from "@/components/ConversationCard/ConversationCard";
+import { useConversationSelect } from "@/context/ConversationContext";
 
 export default function Home() {
   useAddNewUser();
   const { conversations, conversationsLoading, conversationsError } =
     useConversations();
+  const { selectedConversation, dispatch } = useConversationSelect();
   const toast = useToast();
 
   if (conversationsError)
@@ -30,8 +39,19 @@ export default function Home() {
       >
         <UserSearhSelect />
         <Box overflowY="auto" height="83vh">
+          {conversationsLoading && (
+            <Center h="80%">
+              <Spinner color="white" size="lg" />
+            </Center>
+          )}
           {conversations?.userConversations.map((conversation) => (
             <ConversationCard
+              onClick={() =>
+                dispatch({
+                  type: "SELECT",
+                  payload: conversation.conversationId,
+                })
+              }
               key={conversation.conversationId}
               user={conversation.user}
               lastMessage={conversation.lastMessage}
