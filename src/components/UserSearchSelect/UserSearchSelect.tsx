@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useSearchUser } from "@/lib/hooks";
 import { Search2Icon, WarningIcon } from "@chakra-ui/icons";
 import {
@@ -14,9 +14,10 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { useDebouncedState } from "@/lib/hooks/useDebouncedState";
 
 export const UserSearhSelect = () => {
-  const [query, setQuery] = useState<string | null>();
+  const [query, setQuery] = useDebouncedState<string | null>(null, 400);
   const searchResultsContainerRef = useRef<HTMLDivElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -69,13 +70,15 @@ export const UserSearhSelect = () => {
       fetchNextPage();
   };
 
-  // TODO: Add debounce function
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-    if (event.target.value) {
-      onOpen();
-    } else onClose();
-  };
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(event.target.value || null);
+
+      if (event.target.value) onOpen();
+      else onClose();
+    },
+    [onClose, onOpen, setQuery]
+  );
 
   return (
     <Center
@@ -93,7 +96,6 @@ export const UserSearhSelect = () => {
       >
         <Flex alignItems="center">
           <Input
-            value={query as string}
             onChange={(event) => handleInputChange(event)}
             bgColor="transparent"
             border="none"
