@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 
 export const UserSearhSelect = () => {
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useState<string | null>();
   const searchResultsContainerRef = useRef<HTMLDivElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -69,6 +69,7 @@ export const UserSearhSelect = () => {
       fetchNextPage();
   };
 
+  // TODO: Add debounce function
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     if (event.target.value) {
@@ -92,7 +93,7 @@ export const UserSearhSelect = () => {
       >
         <Flex alignItems="center">
           <Input
-            value={query}
+            value={query as string}
             onChange={(event) => handleInputChange(event)}
             bgColor="transparent"
             border="none"

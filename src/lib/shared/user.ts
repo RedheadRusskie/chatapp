@@ -32,7 +32,7 @@ export const postUserRequest = async () => {
 };
 
 export const searchUsersRequest = async (
-  query: string,
+  query: string | null,
   page: number
 ): Promise<User[]> => {
   try {

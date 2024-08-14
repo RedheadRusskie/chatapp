@@ -23,7 +23,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
     const hoursDiff = now.diff(messageTime, "hour");
 
     if (hoursDiff < 24) return messageTime.format("HH:mm");
-    return messageTime.format("DD/MM/YY");
+    return messageTime.format("DD/MM");
   };
 
   const truncateMessage = (message: string) =>

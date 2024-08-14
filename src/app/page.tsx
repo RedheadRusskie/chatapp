@@ -1,14 +1,7 @@
 "use client";
 
 import { useAddNewUser, useConversations } from "@/lib/hooks";
-import {
-  Box,
-  Center,
-  Flex,
-  Spinner,
-  getToken,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Center, Flex, Spinner, useToast } from "@chakra-ui/react";
 import { UserSearhSelect } from "@/components/UserSearchSelect/UserSearchSelect";
 import { ConversationCard } from "@/components/ConversationCard/ConversationCard";
 import { useConversationSelect } from "@/context/ConversationContext";

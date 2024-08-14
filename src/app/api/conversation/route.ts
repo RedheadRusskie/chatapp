@@ -1,6 +1,7 @@
 import prisma from "@/utils/prisma/db";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { getCurrentUserByEmail } from "@/lib/shared/queries/user";
 
 export async function GET() {
   try {
@@ -10,15 +11,12 @@ export async function GET() {
     if (!sessionUser || sessionUser.email === null)
       return NextResponse.json({ message: "Forbidden", status: 401 });
 
-    const currentUser = await prisma.user.findFirst({
-      where: {
-        email: sessionUser.email,
-      },
-    });
+    const currentUser = await getCurrentUserByEmail(
+      session.user?.email as string
+    );
 
-    if (!currentUser) {
+    if (!currentUser)
       return NextResponse.json({ message: "User not found", status: 404 });
-    }
 
     const userConversations = await prisma.userConversation.findMany({
       where: {

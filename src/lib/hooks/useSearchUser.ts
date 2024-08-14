@@ -4,13 +4,14 @@ import { useSession } from "next-auth/react";
 import { User } from "@prisma/client";
 import { AxiosError } from "axios";
 
-export const useSearchUser = (query: string) => {
+export const useSearchUser = (query: string | null | undefined) => {
   const { data: session } = useSession();
 
   const { data, isLoading, error, fetchNextPage, hasNextPage } =
     useInfiniteQuery<User[], AxiosError>(
       ["userSearchQuery", query],
-      ({ pageParam = 0 }) => searchUsersRequest(query, pageParam),
+      ({ pageParam = 0 }) =>
+        searchUsersRequest((query as string) || null, pageParam),
       {
         enabled: !!session && !!query && query.length > 3,
         getNextPageParam: (lastPage, allPages) => {
