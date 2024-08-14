@@ -5,7 +5,7 @@ export const useDebouncedState = <T>(
   initialState: T | (() => T),
   delay?: number
 ) => {
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState<T | (() => T)>(initialState);
 
   const debouncedSetState = debounce(setState, delay);
 
