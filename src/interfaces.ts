@@ -10,3 +10,15 @@ export interface ConversationData {
     }
   ];
 }
+
+export interface MessageData {
+  content: string | null;
+  id: string;
+  createdAt: Date;
+  sender: {
+    name: string | null;
+    userId: string;
+    username: string;
+    profilePicture: string | null;
+  };
+}

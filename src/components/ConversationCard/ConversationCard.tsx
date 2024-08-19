@@ -1,5 +1,5 @@
-import React, { MouseEventHandler } from "react";
-import { Avatar, AvatarBadge, Box, Center, Flex, Text } from "@chakra-ui/react";
+import React from "react";
+import { Avatar, AvatarBadge, Box, Flex, Text } from "@chakra-ui/react";
 import { User } from "@prisma/client";
 import dayjs from "dayjs";
 import styles from "./ConversationCard.module.scss";

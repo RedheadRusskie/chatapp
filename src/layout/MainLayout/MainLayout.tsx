@@ -18,7 +18,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <ChakraProvider>
         <AuthProvider>
           <ConversationProvider>
-            <Box w="100%" h="94.5vh" backgroundColor="var(--bg-main)">
+            <Box
+              overflow="hidden"
+              w="100%"
+              h="90vh"
+              backgroundColor="var(--bg-main)"
+            >
               {children}
             </Box>
           </ConversationProvider>

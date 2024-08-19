@@ -1,10 +1,12 @@
 "use client";
 
+import { useMemo } from "react";
 import { useAddNewUser, useConversations } from "@/lib/hooks";
 import { Box, Center, Flex, Spinner, useToast } from "@chakra-ui/react";
 import { UserSearhSelect } from "@/components/UserSearchSelect/UserSearchSelect";
 import { ConversationCard } from "@/components/ConversationCard/ConversationCard";
 import { useConversationSelect } from "@/context/ConversationContext";
+import { ConversationSection } from "@/components/ConversationSection/ConversationSection";
 
 export default function Home() {
   useAddNewUser();
@@ -22,16 +24,30 @@ export default function Home() {
       position: "top",
     });
 
+  const selectedConversationUser = useMemo(
+    () =>
+      conversations?.userConversations.find(
+        (userConversation) =>
+          userConversation.conversationId ===
+          selectedConversation.selectedConversationId
+      ),
+    [
+      conversations?.userConversations,
+      selectedConversation.selectedConversationId,
+    ]
+  );
+
   return (
-    <Flex w="100%" h="96%">
+    <Flex w="100%" h="100%">
       <Box
         w="26em"
         bgColor="#1C173E"
         borderRadius="30px"
-        margin="0 1em 1em 1em"
+        margin="0 0.5em 1em 1em"
+        h="95%"
       >
         <UserSearhSelect />
-        <Box overflowY="auto" height="83vh">
+        <Box overflowY="auto" h="70%">
           {conversationsLoading && (
             <Center h="80%">
               <Spinner color="white" size="lg" />
@@ -53,7 +69,13 @@ export default function Home() {
           ))}
         </Box>
       </Box>
-      <Box flex="1">{/** Conversation here */}</Box>
+      {selectedConversation.selectedConversationId &&
+        selectedConversationUser && (
+          <ConversationSection
+            conversationId={selectedConversation.selectedConversationId}
+            selectedConversationUser={selectedConversationUser.user}
+          />
+        )}
     </Flex>
   );
 }
