@@ -1,19 +1,14 @@
-import { MessageResponse } from "@/interfaces";
 import axios, { AxiosError } from "axios";
-
-const baseEndpoint = process.env.NEXT_PUBLIC_BASE_URL;
+import { MessageResponse } from "@/interfaces";
 
 export const fetchCurrentMessagesRequest = async (
   conversationId: string,
   page: number
-): Promise<MessageResponse[]> => {
+): Promise<MessageResponse> => {
   try {
-    const response = await axios.get(
-      `${baseEndpoint}/api/messages/${conversationId}`,
-      {
-        params: { skip: page * 10, take: 10 },
-      }
-    );
+    const response = await axios.get(`/api/messages/${conversationId}`, {
+      params: { skip: page * 10, take: 10 },
+    });
 
     return response.data;
   } catch (error: unknown) {

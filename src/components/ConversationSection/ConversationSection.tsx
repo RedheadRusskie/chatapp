@@ -14,19 +14,24 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
   selectedConversationUser,
 }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
-  const {
-    messages,
-    messagesLoading,
-    messagesError,
-    fetchNextPage,
-    hasNextPage,
-  } = useFetchMessages(conversationId);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const { messages, messagesLoading, fetchNextPage, hasNextPage } =
+    useFetchMessages(conversationId);
 
   useEffect(() => {
-    if (bottomRef.current) {
+    if (bottomRef.current)
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
   }, [messages]);
+
+  const handleScroll = () => {
+    if (
+      messagesContainerRef.current &&
+      messagesContainerRef.current.scrollTop === 0 &&
+      hasNextPage &&
+      !messagesLoading
+    )
+      fetchNextPage();
+  };
 
   return (
     <Box
@@ -55,15 +60,22 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
           </Text>
         </Center>
       </Flex>
-      <Box flex="1" overflowY="auto" p={5} maxH="85%">
+      <Box
+        onScroll={handleScroll}
+        ref={messagesContainerRef}
+        flex="1"
+        overflowY="auto"
+        p={5}
+        maxH="85%"
+      >
         {messagesLoading && (
           <Center h="100%">
             <Spinner color="white" size="lg" />
           </Center>
         )}
-        {messages[0] && (
+        {messages.length > 0 && (
           <>
-            {messages[0].messages.map((messageData) => (
+            {messages.map((messageData) => (
               <MessageBox
                 key={messageData.id}
                 messageData={messageData}
@@ -74,7 +86,6 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
           </>
         )}
       </Box>
-      <Box></Box>
     </Box>
   );
 };

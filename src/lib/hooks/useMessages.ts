@@ -9,21 +9,29 @@ const messageQueryKeys = {
 
 export const useFetchMessages = (conversationId: string) => {
   const { data, isLoading, error, fetchNextPage, hasNextPage } =
-    useInfiniteQuery<MessageResponse[], AxiosError>(
+    useInfiniteQuery<MessageResponse, AxiosError>(
       [messageQueryKeys.messageQueryKey, conversationId],
       ({ pageParam = 0 }) =>
         fetchCurrentMessagesRequest(conversationId, pageParam),
       {
         enabled: !!conversationId,
         getNextPageParam: (lastPage, allPages) => {
-          if (lastPage.length < 10) return undefined;
+          if (lastPage.messages.length < 10) return;
           return allPages.length;
         },
       }
     );
 
+  const messages =
+    data?.pages
+      .flatMap((page) => page.messages)
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      ) || [];
+
   return {
-    messages: data?.pages.flat() || [],
+    messages,
     messagesLoading: isLoading,
     messagesError: error,
     fetchNextPage,

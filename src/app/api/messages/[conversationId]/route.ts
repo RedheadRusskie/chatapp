@@ -26,13 +26,15 @@ export async function GET(
     const skip = parseInt(url.searchParams.get("skip") || "0", 10);
     const take = parseInt(url.searchParams.get("take") || "10", 10);
 
-    const messages = await prisma.directMessage.findMany({
+    const queriedMessages = await prisma.directMessage.findMany({
       where: {
         conversationId: conversationId,
       },
       orderBy: {
-        createdAt: "asc",
+        createdAt: "desc",
       },
+      skip: skip,
+      take: take,
       select: {
         id: true,
         content: true,
@@ -46,9 +48,11 @@ export async function GET(
           },
         },
       },
-      skip: skip,
-      take: take,
     });
+
+    const messages = queriedMessages.sort(
+      (prev, current) => prev.createdAt.getTime() - current.createdAt.getTime()
+    );
 
     return NextResponse.json({ messages }, { status: 200 });
   } catch (error) {
