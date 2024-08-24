@@ -1,7 +1,8 @@
-import { useConversationSelect } from "@/context/ConversationContext";
+import { useEffect, useRef } from "react";
 import { useFetchMessages } from "@/lib/hooks/useMessages";
-import { Avatar, Box, Center, Flex, Text } from "@chakra-ui/react";
 import { User } from "@prisma/client";
+import { Avatar, Box, Center, Flex, Spinner, Text } from "@chakra-ui/react";
+import { MessageBox } from "../MessageBox/MessageBox";
 
 interface ConversationSectionProps {
   conversationId: string;
@@ -12,6 +13,7 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
   conversationId,
   selectedConversationUser,
 }) => {
+  const bottomRef = useRef<HTMLDivElement>(null);
   const {
     messages,
     messagesLoading,
@@ -20,18 +22,24 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
     hasNextPage,
   } = useFetchMessages(conversationId);
 
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   return (
     <Box
       flex="1"
       h="95%"
       bgColor="#1C173E"
       borderRadius="30px"
-      overflowY="auto"
       margin="0 1em 1em 0.5em"
     >
       <Flex
         h="4em"
-        bgColor="#262056"
+        borderRadius="30px 30px 0 0"
+        bgColor="var(--accent)"
         boxShadow="0px 1px 28px -6px rgba(0,0,0,0.39)"
       >
         <Center gap="1em" padding="1em 0.5em">
@@ -47,6 +55,26 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
           </Text>
         </Center>
       </Flex>
+      <Box flex="1" overflowY="auto" p={5} maxH="85%">
+        {messagesLoading && (
+          <Center h="100%">
+            <Spinner color="white" size="lg" />
+          </Center>
+        )}
+        {messages[0] && (
+          <>
+            {messages[0].messages.map((messageData) => (
+              <MessageBox
+                key={messageData.id}
+                messageData={messageData}
+                selectedConversationUser={selectedConversationUser}
+              />
+            ))}
+            <div ref={bottomRef} />
+          </>
+        )}
+      </Box>
+      <Box></Box>
     </Box>
   );
 };

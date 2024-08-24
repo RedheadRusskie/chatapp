@@ -1,4 +1,4 @@
-import { MessageData } from "@/interfaces";
+import { MessageResponse } from "@/interfaces";
 import axios, { AxiosError } from "axios";
 
 const baseEndpoint = process.env.NEXT_PUBLIC_BASE_URL;
@@ -6,7 +6,7 @@ const baseEndpoint = process.env.NEXT_PUBLIC_BASE_URL;
 export const fetchCurrentMessagesRequest = async (
   conversationId: string,
   page: number
-): Promise<MessageData[]> => {
+): Promise<MessageResponse[]> => {
   try {
     const response = await axios.get(
       `${baseEndpoint}/api/messages/${conversationId}`,

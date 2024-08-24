@@ -58,7 +58,7 @@ export async function GET() {
       const usersExcludingCurrentUser = userConversation.conversation.users
         .filter((user) => user.user.userId !== currentUser.userId)
         .map((user) => ({
-          userID: user.user.userId,
+          userId: user.user.userId,
           username: user.user.username,
           name: user.user.name,
           active: user.user.active,

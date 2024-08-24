@@ -39,6 +39,7 @@ export default function Home() {
 
   return (
     <Flex w="100%" h="100%">
+      {/* TODO: Isolate to dedicated component*/}
       <Box
         w="26em"
         bgColor="#1C173E"

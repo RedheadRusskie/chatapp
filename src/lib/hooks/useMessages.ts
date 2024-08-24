@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "react-query";
 import { AxiosError } from "axios";
-import { MessageData } from "@/interfaces";
+import { MessageResponse } from "@/interfaces";
 import { fetchCurrentMessagesRequest } from "../shared";
 
 const messageQueryKeys = {
@@ -9,7 +9,7 @@ const messageQueryKeys = {
 
 export const useFetchMessages = (conversationId: string) => {
   const { data, isLoading, error, fetchNextPage, hasNextPage } =
-    useInfiniteQuery<MessageData[], AxiosError>(
+    useInfiniteQuery<MessageResponse[], AxiosError>(
       [messageQueryKeys.messageQueryKey, conversationId],
       ({ pageParam = 0 }) =>
         fetchCurrentMessagesRequest(conversationId, pageParam),

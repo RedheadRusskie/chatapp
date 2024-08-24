@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar, AvatarBadge, Box, Flex, Text } from "@chakra-ui/react";
 import { User } from "@prisma/client";
-import dayjs from "dayjs";
+import { formatDate } from "@/utils/formatDate";
 import styles from "./ConversationCard.module.scss";
 
 interface ConversationCardProps {
@@ -17,14 +17,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
   updatedAt,
   onClick,
 }) => {
-  const formatDate = (isoString: string): string => {
-    const now = dayjs();
-    const messageTime = dayjs(isoString);
-    const hoursDiff = now.diff(messageTime, "hour");
-
-    if (hoursDiff < 24) return messageTime.format("HH:mm");
-    return messageTime.format("DD/MM");
-  };
+  const formattedDate = formatDate(updatedAt);
 
   const truncateMessage = (message: string) =>
     message.substring(0, 10).concat("..");
@@ -38,7 +31,12 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
       bgColor="#181437"
       color="#fff"
     >
-      <Flex height="100%" alignItems="center" padding="0.8em">
+      <Flex
+        height="100%"
+        alignItems="center"
+        padding="0.8em"
+        position="relative" // Added to enable positioning the date element
+      >
         <Box mr="0.8em">
           <Avatar size="lg" src={user.profilePicture || undefined}>
             <AvatarBadge
@@ -56,8 +54,14 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
           </Flex>
           <Text color="#6F68A9">{truncateMessage(lastMessage)}</Text>
         </Box>
-        <Text marginLeft="8em" marginTop="-1.8em">
-          {formatDate(updatedAt)}
+        <Text
+          position="absolute"
+          top="0.8em"
+          right="1em"
+          fontSize="0.9rem"
+          color="white"
+        >
+          {formattedDate}
         </Text>
       </Flex>
     </Box>
