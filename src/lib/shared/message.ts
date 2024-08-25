@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { MessageResponse } from "@/interfaces";
+import { MessageBody, MessageResponse } from "@/interfaces";
 
 export const fetchCurrentMessagesRequest = async (
   conversationId: string,
@@ -17,5 +17,27 @@ export const fetchCurrentMessagesRequest = async (
 
       throw new Error(axiosError.message);
     } else throw new Error("An unknown error occurred");
+  }
+};
+
+export const messageMutationFunction = async (
+  conversationId: string,
+  messageData: MessageBody
+) => {
+  try {
+    const response = await axios.post(
+      `/api/messages/${conversationId}`,
+      messageData
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const axiosError: AxiosError = error;
+
+      throw new Error(axiosError.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
   }
 };

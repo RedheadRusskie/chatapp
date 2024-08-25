@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import prisma from "@/utils/prisma/db";
 import { getCurrentUserByEmail } from "@/lib/shared/queries/user";
+import { MessageBody } from "@/interfaces";
 
 export async function GET(
   request: Request,
@@ -55,6 +56,43 @@ export async function GET(
     );
 
     return NextResponse.json({ messages }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error }, { status: 500 });
+  }
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: { conversationId: string } }
+) {
+  try {
+    const session = await getServerSession();
+    const sessionUser = session?.user;
+
+    if (!sessionUser || sessionUser.email === null)
+      return NextResponse.json({ message: "Forbidden", status: 401 });
+
+    const currentUser = await getCurrentUserByEmail(
+      session.user?.email as string
+    );
+
+    if (!currentUser)
+      return NextResponse.json({ message: "User not found", status: 404 });
+
+    const requestBody: MessageBody = await request.json();
+
+    const createMessage = await prisma.directMessage.create({
+      data: {
+        content: requestBody.content,
+        conversationId: params.conversationId,
+        senderId: currentUser.userId,
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Message sent successfully", createMessage },
+      { status: 201 }
+    );
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }

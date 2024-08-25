@@ -26,3 +26,7 @@ export interface MessageData {
 export interface MessageResponse {
   messages: MessageData[];
 }
+
+export interface MessageBody {
+  content: string;
+}

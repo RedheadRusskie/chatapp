@@ -1,13 +1,19 @@
-import { useInfiniteQuery } from "react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "react-query";
 import { AxiosError } from "axios";
-import { MessageResponse } from "@/interfaces";
-import { fetchCurrentMessagesRequest } from "../shared";
+import { MessageBody, MessageResponse } from "@/interfaces";
+import {
+  fetchCurrentMessagesRequest,
+  messageMutationFunction,
+} from "../shared";
+import { conversationQueryKeys } from "./useConversations";
 
 const messageQueryKeys = {
   messageQueryKey: "conversation",
 };
 
-export const useFetchMessages = (conversationId: string) => {
+export const useMessages = (conversationId: string) => {
+  const queryClient = useQueryClient();
+
   const { data, isLoading, error, fetchNextPage, hasNextPage } =
     useInfiniteQuery<MessageResponse, AxiosError>(
       [messageQueryKeys.messageQueryKey, conversationId],
@@ -30,11 +36,30 @@ export const useFetchMessages = (conversationId: string) => {
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       ) || [];
 
+  const messageMutation = useMutation(
+    (messageData: MessageBody) =>
+      messageMutationFunction(conversationId, messageData),
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({
+          queryKey: messageQueryKeys.messageQueryKey,
+        });
+        queryClient.invalidateQueries({
+          queryKey: conversationQueryKeys.conversationKey,
+        });
+      },
+      onError: (error: AxiosError) => {
+        console.error("Error sending message:", error.message);
+      },
+    }
+  );
+
   return {
     messages,
     messagesLoading: isLoading,
     messagesError: error,
     fetchNextPage,
     hasNextPage,
+    messageMutation,
   };
 };
