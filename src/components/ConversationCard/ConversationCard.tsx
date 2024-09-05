@@ -20,7 +20,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
   const formattedDate = formatDate(updatedAt);
 
   const truncateMessage = (message: string) =>
-    message.substring(0, 10).concat("..");
+    message ? message.substring(0, 10).concat("..") : null;
 
   return (
     <Box
@@ -35,7 +35,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
         height="100%"
         alignItems="center"
         padding="0.8em"
-        position="relative" // Added to enable positioning the date element
+        position="relative"
       >
         <Box mr="0.8em">
           <Avatar size="lg" src={user.profilePicture || undefined}>

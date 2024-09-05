@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import prisma from "@/utils/prisma/db";
 import { getCurrentUserByEmail } from "@/lib/shared/queries/user";
-import { MessageBody } from "@/interfaces";
+import { MessageBody, MessageData } from "@/interfaces";
 
 export async function GET(
   request: Request,
@@ -83,14 +83,37 @@ export async function POST(
 
     const createMessage = await prisma.directMessage.create({
       data: {
+        id: requestBody.id,
         content: requestBody.content,
         conversationId: params.conversationId,
         senderId: currentUser.userId,
       },
+      include: {
+        sender: {
+          select: {
+            userId: true,
+            username: true,
+            name: true,
+            profilePicture: true,
+          },
+        },
+      },
     });
 
+    const createMessageRO: MessageData = {
+      content: createMessage.content,
+      id: createMessage.id,
+      createdAt: createMessage.createdAt.toISOString(),
+      sender: {
+        name: createMessage.sender.name,
+        userId: createMessage.sender.userId,
+        username: createMessage.sender.username,
+        profilePicture: createMessage.sender.profilePicture,
+      },
+    };
+
     return NextResponse.json(
-      { message: "Message sent successfully", createMessage },
+      { message: "Message sent successfully", createMessage: createMessageRO },
       { status: 201 }
     );
   } catch (error) {

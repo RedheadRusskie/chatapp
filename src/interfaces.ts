@@ -28,5 +28,6 @@ export interface MessageResponse {
 }
 
 export interface MessageBody {
+  id: string;
   content: string;
 }

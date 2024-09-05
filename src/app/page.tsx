@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useAddNewUser, useConversations } from "@/lib/hooks";
 import { Box, Center, Flex, Spinner, useToast } from "@chakra-ui/react";
 import { UserSearhSelect } from "@/components/UserSearchSelect/UserSearchSelect";
 import { ConversationCard } from "@/components/ConversationCard/ConversationCard";
 import { useConversationSelect } from "@/context/ConversationContext";
 import { ConversationSection } from "@/components/ConversationSection/ConversationSection";
+import axios from "axios";
+import { socket } from "@/lib/socket/socket";
 
 export default function Home() {
   useAddNewUser();
@@ -54,20 +56,21 @@ export default function Home() {
               <Spinner color="white" size="lg" />
             </Center>
           )}
-          {conversations?.userConversations.map((conversation) => (
-            <ConversationCard
-              onClick={() =>
-                dispatch({
-                  type: "SELECT",
-                  payload: conversation.conversationId,
-                })
-              }
-              key={conversation.conversationId}
-              user={conversation.user}
-              lastMessage={conversation.lastMessage}
-              updatedAt={conversation.updatedAt}
-            />
-          ))}
+          {conversations &&
+            conversations?.userConversations.map((conversation) => (
+              <ConversationCard
+                onClick={() =>
+                  dispatch({
+                    type: "SELECT",
+                    payload: conversation.conversationId,
+                  })
+                }
+                key={conversation.conversationId}
+                user={conversation.user}
+                lastMessage={conversation.lastMessage}
+                updatedAt={conversation.updatedAt}
+              />
+            ))}
         </Box>
       </Box>
       {selectedConversation.selectedConversationId &&

@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { MessageBox } from "../MessageBox/MessageBox";
 import { MessageBody } from "@/interfaces";
+import { socket } from "@/lib/socket/socket";
+import { v4 as uuidv4 } from "uuid";
 
 interface ConversationSectionProps {
   conversationId: string;
@@ -32,13 +34,38 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
     hasNextPage,
     messageMutation,
   } = useMessages(conversationId);
+  const [isConnected, setIsConnected] = useState<boolean>();
+  const [fooEvents, setFooEvents] = useState<any[]>();
+
+  useEffect(() => {
+    function onConnect() {
+      socket.emit("joinRoom", { roomId: conversationId });
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+    socket.connect();
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.disconnect();
+    };
+  }, [conversationId]);
 
   useEffect(() => {
     if (bottomRef.current)
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleScroll = () => {
+  const handleScroll = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    event.preventDefault();
+
     if (
       messagesContainerRef.current &&
       messagesContainerRef.current.scrollTop === 0 &&
@@ -52,10 +79,15 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
   const handleSendMessage = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter" || !inputValue) return;
 
+    const id = uuidv4();
+
     const messageRequestBody: MessageBody = {
+      // ID generated here for consistency during optimistic UI updates
+      id,
       content: inputValue as string,
     };
 
+    socket.emit("sendMessage", { roomId: conversationId, message: inputValue });
     messageMutation.mutate(messageRequestBody);
     setInputValue("");
   };
@@ -92,7 +124,7 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
         </Center>
       </Flex>
       <Box
-        onScroll={handleScroll}
+        onScroll={(event) => handleScroll(event)}
         ref={messagesContainerRef}
         flex="1"
         overflowY="auto"
@@ -107,13 +139,16 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
         )}
         {messages.length > 0 && (
           <>
-            {messages.map((messageData) => (
-              <MessageBox
-                key={messageData.id}
-                messageData={messageData}
-                selectedConversationUser={selectedConversationUser}
-              />
-            ))}
+            {messages.map((messageData) => {
+              if (messageData !== null)
+                return (
+                  <MessageBox
+                    key={messageData.id}
+                    messageData={messageData}
+                    selectedConversationUser={selectedConversationUser}
+                  />
+                );
+            })}
             <div ref={bottomRef} />
           </>
         )}
