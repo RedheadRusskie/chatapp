@@ -56,7 +56,9 @@ export const useMessages = (conversationId: string) => {
   }, [messages]);
 
   const handleReceiveMessage = (messageData: MessageData) => {
-    messageData &&
+    if (!messageData) return;
+
+    if (messageData.conversationId === conversationId)
       setCurrentMessages((prevMessages) => {
         const messageExists = prevMessages.find(
           (message) => message.id === messageData.id
@@ -71,7 +73,10 @@ export const useMessages = (conversationId: string) => {
 
     socket.emit("sendMessage", {
       roomId: conversationId,
-      messageData,
+      messageData: {
+        ...messageData,
+        conversationId: conversationId,
+      },
     });
   };
 

@@ -34,7 +34,6 @@ export async function GET() {
                     username: true,
                     name: true,
                     profilePicture: true,
-                    active: true,
                   },
                 },
               },
@@ -61,7 +60,6 @@ export async function GET() {
           userId: user.user.userId,
           username: user.user.username,
           name: user.user.name,
-          active: user.user.active,
           profilePicture: user.user.profilePicture,
         }));
 

@@ -2,30 +2,35 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 
 const httpServer = createServer();
+
 const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:3000",
   },
 });
 
+const onlineUsers = new Map();
+
 io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
+  socket.on("setUserId", (userId) => {
+    onlineUsers.set(socket.id, userId);
+
+    io.emit("onlineUsers", Array.from(onlineUsers.values()));
+  });
 
   socket.on("joinRoom", ({ roomId }) => {
     socket.join(roomId);
-    console.log(`User ${socket.id} joined room: ${roomId}`);
   });
 
   socket.on("sendMessage", ({ roomId, messageData }) => {
-    console.log("test message sent:", roomId, messageData);
     io.to(roomId).emit("receiveMessage", messageData);
   });
 
   socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
+    onlineUsers.delete(socket.id);
 
-  socket.disc();
+    io.emit("onlineUsers", Array.from(onlineUsers.values()));
+  });
 });
 
 const PORT = process.env.PORT || 4000;

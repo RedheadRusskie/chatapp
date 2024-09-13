@@ -16,7 +16,6 @@ model User {
   createdAt         DateTime           @default(now())
   sentMessages      DirectMessage[]    @relation("Sender")
   conversations     UserConversation[] @relation("UserConversations")
-  active            Boolean            @default(true)
 }
 
 model DirectMessage {

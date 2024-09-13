@@ -8,6 +8,7 @@ interface ConversationCardProps {
   user: Partial<User>;
   lastMessage: string;
   updatedAt: string;
+  onlineUsers: string[] | undefined;
   onClick: () => void;
 }
 
@@ -15,12 +16,15 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
   user,
   lastMessage,
   updatedAt,
+  onlineUsers,
   onClick,
 }) => {
   const formattedDate = formatDate(updatedAt);
 
   const truncateMessage = (message: string) =>
     message ? message.substring(0, 10).concat("..") : null;
+
+  const userOnline = onlineUsers?.find((userId) => userId === user.userId);
 
   return (
     <Box
@@ -41,7 +45,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
           <Avatar size="lg" src={user.profilePicture || undefined}>
             <AvatarBadge
               boxSize="0.9em"
-              bg={user.active ? "green.500" : "gray.500"}
+              bg={userOnline ? "green.500" : "gray.500"}
               borderColor="#181437"
               borderWidth="4px"
             />

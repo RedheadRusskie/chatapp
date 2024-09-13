@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useAddNewUser, useConversations } from "@/lib/hooks";
 import { Box, Center, Flex, Spinner, useToast } from "@chakra-ui/react";
 import { UserSearhSelect } from "@/components/UserSearchSelect/UserSearchSelect";
 import { ConversationCard } from "@/components/ConversationCard/ConversationCard";
 import { useConversationSelect } from "@/context/ConversationContext";
 import { ConversationSection } from "@/components/ConversationSection/ConversationSection";
-import axios from "axios";
-import { socket } from "@/lib/socket/socket";
+import { useSocket } from "@/lib/hooks/useSocket";
 
 export default function Home() {
   useAddNewUser();
   const { conversations, conversationsLoading, conversationsError } =
     useConversations();
   const { selectedConversation, dispatch } = useConversationSelect();
+  const { onlineUsers } = useSocket();
   const toast = useToast();
 
   if (conversationsError)
@@ -41,7 +41,6 @@ export default function Home() {
 
   return (
     <Flex w="100%" h="100%">
-      {/* TODO: Isolate to dedicated component*/}
       <Box
         w="26em"
         bgColor="#1C173E"
@@ -68,6 +67,7 @@ export default function Home() {
                 key={conversation.conversationId}
                 user={conversation.user}
                 lastMessage={conversation.lastMessage}
+                onlineUsers={onlineUsers}
                 updatedAt={conversation.updatedAt}
               />
             ))}
@@ -78,6 +78,7 @@ export default function Home() {
           <ConversationSection
             conversationId={selectedConversation.selectedConversationId}
             selectedConversationUser={selectedConversationUser.user}
+            onlineUsers={onlineUsers}
           />
         )}
     </Flex>

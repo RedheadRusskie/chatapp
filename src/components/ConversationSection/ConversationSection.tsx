@@ -14,15 +14,18 @@ import { MessageBox } from "../MessageBox/MessageBox";
 import { MessageBody } from "@/interfaces";
 import { socket } from "@/lib/socket/socket";
 import { v4 as uuidv4 } from "uuid";
+import { useSocket } from "@/lib/hooks/useSocket";
 
 interface ConversationSectionProps {
   conversationId: string;
   selectedConversationUser: Partial<User>;
+  onlineUsers: string[] | undefined;
 }
 
 export const ConversationSection: React.FC<ConversationSectionProps> = ({
   conversationId,
   selectedConversationUser,
+  onlineUsers,
 }) => {
   const [inputValue, setInputValue] = useState<string>();
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -34,29 +37,15 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
     hasNextPage,
     messageMutation,
   } = useMessages(conversationId);
-  const [isConnected, setIsConnected] = useState<boolean>();
-  const [fooEvents, setFooEvents] = useState<any[]>();
+  const { isConnected, joinRoom } = useSocket();
+
+  const userOnline = onlineUsers?.find(
+    (userId) => userId === selectedConversationUser.userId
+  );
 
   useEffect(() => {
-    function onConnect() {
-      socket.emit("joinRoom", { roomId: conversationId });
-      setIsConnected(true);
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-    }
-    socket.connect();
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.disconnect();
-    };
-  }, [conversationId]);
+    if (isConnected) joinRoom(conversationId);
+  }, [isConnected, conversationId, joinRoom]);
 
   useEffect(() => {
     if (bottomRef.current)
@@ -114,9 +103,7 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
           <Avatar
             src={selectedConversationUser.profilePicture as string}
             border="3px solid transparent"
-            boxShadow={`0 0 0 2px ${
-              selectedConversationUser.active ? "#48BB78" : "#718096"
-            }`}
+            boxShadow={`0 0 0 2px ${userOnline ? "#48BB78" : "#718096"}`}
           />
           <Text color="white" fontSize="1.4rem">
             {selectedConversationUser.name}

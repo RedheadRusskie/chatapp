@@ -12,6 +12,7 @@ export interface ConversationData {
 }
 
 export interface MessageData {
+  conversationId?: string;
   content: string | null;
   id: string;
   createdAt: string;
