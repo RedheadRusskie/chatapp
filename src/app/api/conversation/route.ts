@@ -39,16 +39,21 @@ export async function GET() {
               },
             },
             messages: {
+              take: 1,
               orderBy: {
                 createdAt: "desc",
               },
-              take: 1,
               select: {
                 content: true,
               },
             },
             lastUpdated: true,
           },
+        },
+      },
+      orderBy: {
+        conversation: {
+          lastUpdated: "desc",
         },
       },
     });
@@ -76,6 +81,6 @@ export async function GET() {
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json({ error: error }, { status: 500 });
+    return NextResponse.json({ error }, { status: 500 });
   }
 }

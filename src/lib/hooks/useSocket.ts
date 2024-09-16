@@ -21,7 +21,6 @@ export const useSocket = () => {
     };
 
     const onDisconnect = () => setIsConnected(false);
-
     const updateOnlineUsers = (users: string[]) => setOnlineUsers(users);
 
     socket.connect();
@@ -40,5 +39,5 @@ export const useSocket = () => {
 
   const joinRoom = (roomId: string) => socket.emit("joinRoom", { roomId });
 
-  return { isConnected, onlineUsers, joinRoom };
+  return { isConnected, onlineUsers, joinRoom, socket };
 };

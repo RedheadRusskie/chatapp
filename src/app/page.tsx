@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { useAddNewUser, useConversations } from "@/lib/hooks";
 import { Box, Center, Flex, Spinner, useToast } from "@chakra-ui/react";
-import { UserSearhSelect } from "@/components/UserSearchSelect/UserSearchSelect";
 import { ConversationCard } from "@/components/ConversationCard/ConversationCard";
+import { UserSearchSelect } from "@/components/UserSearchSelect/UserSearchSelect";
 import { useConversationSelect } from "@/context/ConversationContext";
 import { ConversationSection } from "@/components/ConversationSection/ConversationSection";
-import { useSocket } from "@/lib/hooks/useSocket";
+import { useConversations } from "@/lib/hooks/useConversations";
+import { useAddNewUser, useSocket } from "@/lib/hooks";
 
 export default function Home() {
   useAddNewUser();
@@ -17,26 +17,25 @@ export default function Home() {
   const { onlineUsers } = useSocket();
   const toast = useToast();
 
-  if (conversationsError)
+  if (conversationsError) {
     toast({
-      title: conversationsError.message,
+      title:
+        conversationsError.message || "An error occurred loading conversations",
       status: "error",
       duration: 4000,
       isClosable: true,
       position: "top",
     });
+  }
 
   const selectedConversationUser = useMemo(
     () =>
-      conversations?.userConversations.find(
-        (userConversation) =>
-          userConversation.conversationId ===
+      conversations.find(
+        (conversation) =>
+          conversation.conversationId ===
           selectedConversation.selectedConversationId
       ),
-    [
-      conversations?.userConversations,
-      selectedConversation.selectedConversationId,
-    ]
+    [conversations, selectedConversation.selectedConversationId]
   );
 
   return (
@@ -48,7 +47,7 @@ export default function Home() {
         margin="0 0.5em 1em 1em"
         h="95%"
       >
-        <UserSearhSelect />
+        <UserSearchSelect />
         <Box overflowY="auto" h="70%">
           {conversationsLoading && (
             <Center h="80%">
@@ -56,7 +55,7 @@ export default function Home() {
             </Center>
           )}
           {conversations &&
-            conversations?.userConversations.map((conversation) => (
+            conversations.map((conversation) => (
               <ConversationCard
                 onClick={() =>
                   dispatch({

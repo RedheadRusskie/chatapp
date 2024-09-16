@@ -100,6 +100,15 @@ export async function POST(
       },
     });
 
+    await prisma.conversation.update({
+      where: {
+        id: params.conversationId,
+      },
+      data: {
+        lastUpdated: createMessage.createdAt,
+      },
+    });
+
     const createMessageRO: MessageData = {
       content: createMessage.content,
       id: createMessage.id,

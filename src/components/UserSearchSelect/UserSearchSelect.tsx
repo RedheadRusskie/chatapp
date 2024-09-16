@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import { useSearchUser } from "@/lib/hooks";
+import { useDebouncedState, useSearchUser } from "@/lib/hooks";
 import { Search2Icon, WarningIcon } from "@chakra-ui/icons";
 import {
   Avatar,
@@ -14,9 +14,8 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { useDebouncedState } from "@/lib/hooks/useDebouncedState";
 
-export const UserSearhSelect = () => {
+export const UserSearchSelect = () => {
   const [query, setQuery] = useDebouncedState<string | null>(null, 400);
   const searchResultsContainerRef = useRef<HTMLDivElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();

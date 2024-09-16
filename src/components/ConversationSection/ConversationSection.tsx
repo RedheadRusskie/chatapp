@@ -14,7 +14,7 @@ import { MessageBox } from "../MessageBox/MessageBox";
 import { MessageBody } from "@/interfaces";
 import { socket } from "@/lib/socket/socket";
 import { v4 as uuidv4 } from "uuid";
-import { useSocket } from "@/lib/hooks/useSocket";
+import { useSocket } from "@/lib/hooks";
 
 interface ConversationSectionProps {
   conversationId: string;

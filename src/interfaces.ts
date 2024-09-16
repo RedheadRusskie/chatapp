@@ -6,6 +6,7 @@ export interface ConversationData {
       conversationId: string;
       user: Partial<User>;
       lastMessage: string;
+      createdAt: string;
       updatedAt: string;
     }
   ];
@@ -31,4 +32,11 @@ export interface MessageResponse {
 export interface MessageBody {
   id: string;
   content: string;
+}
+
+export interface CachedConversation {
+  conversationId: string;
+  user: Partial<User>;
+  lastMessage: string;
+  updatedAt: string;
 }

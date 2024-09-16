@@ -2,17 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { useInfiniteQuery, useMutation } from "react-query";
 import { AxiosError } from "axios";
 import { MessageBody, MessageData, MessageResponse } from "@/interfaces";
+import { useSocket } from "@/lib/hooks";
 import {
   fetchCurrentMessagesRequest,
   messageMutationFunction,
 } from "../shared";
-import { socket } from "../socket/socket";
 
 const messageQueryKeys = {
   messageQueryKey: "conversation",
 };
 
 export const useMessages = (conversationId: string) => {
+  const { socket } = useSocket();
   const user = sessionStorage.getItem("user");
 
   const { data, isLoading, error, fetchNextPage, hasNextPage } =
