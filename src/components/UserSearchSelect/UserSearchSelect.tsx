@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { useDebouncedState, useSearchUser } from "@/lib/hooks";
 import { Search2Icon, WarningIcon } from "@chakra-ui/icons";
 import {
@@ -14,8 +20,20 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import { User } from "@prisma/client";
+import { v4 as uuidv4 } from "uuid";
+import { CachedConversation } from "@/interfaces";
+import { useConversationSelect } from "@/context/ConversationContext";
 
-export const UserSearchSelect = () => {
+interface UserSearchSelectProps {
+  conversations: CachedConversation[];
+  setConversations: Dispatch<SetStateAction<CachedConversation[] | undefined>>;
+}
+
+export const UserSearchSelect: React.FC<UserSearchSelectProps> = ({
+  conversations,
+  setConversations,
+}) => {
   const [query, setQuery] = useDebouncedState<string | null>(null, 400);
   const searchResultsContainerRef = useRef<HTMLDivElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,6 +45,7 @@ export const UserSearchSelect = () => {
     fetchNextPage,
     hasNextPage,
   } = useSearchUser(query);
+  const { dispatch } = useConversationSelect();
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
@@ -78,6 +97,34 @@ export const UserSearchSelect = () => {
     },
     [onClose, onOpen, setQuery]
   );
+
+  const handleClickUser = (user: Partial<User>) => {
+    const conversationUserExists = conversations.find(
+      (conversation) => conversation.user.userId === user.userId
+    );
+
+    if (conversationUserExists) return;
+
+    const cachedConversationObject: CachedConversation = {
+      // ID generated here for consistency during optimistic UI updates
+      conversationId: uuidv4(),
+      user: user,
+      lastMessage: null,
+      updatedAt: new Date(),
+    };
+
+    setConversations((prevConversations) => [
+      cachedConversationObject,
+      ...(prevConversations || []),
+    ]);
+
+    dispatch({
+      type: "SELECT",
+      payload: cachedConversationObject.conversationId,
+    });
+
+    onClose();
+  };
 
   return (
     <Center
@@ -155,7 +202,7 @@ export const UserSearchSelect = () => {
                 key={user.userId}
                 padding="0.5em"
                 _hover={{ backgroundColor: "var(--hover)", cursor: "pointer" }}
-                onClick={onClose}
+                onClick={() => handleClickUser(user)}
               >
                 <Flex gap="0.5em">
                   <Avatar src={user.profilePicture as string} size="xs" />

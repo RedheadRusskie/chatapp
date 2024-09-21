@@ -11,20 +11,22 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { MessageBox } from "../MessageBox/MessageBox";
-import { MessageBody } from "@/interfaces";
+import { MessageBody, UserConversations } from "@/interfaces";
 import { socket } from "@/lib/socket/socket";
 import { v4 as uuidv4 } from "uuid";
-import { useSocket } from "@/lib/hooks";
+import { useConversations, useSocket } from "@/lib/hooks";
 
 interface ConversationSectionProps {
   conversationId: string;
   selectedConversationUser: Partial<User>;
+  existingConversations: UserConversations[];
   onlineUsers: string[] | undefined;
 }
 
 export const ConversationSection: React.FC<ConversationSectionProps> = ({
   conversationId,
   selectedConversationUser,
+  existingConversations,
   onlineUsers,
 }) => {
   const [inputValue, setInputValue] = useState<string>();
@@ -37,6 +39,7 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
     hasNextPage,
     messageMutation,
   } = useMessages(conversationId);
+  const { conversationMutation } = useConversations();
   const { isConnected, joinRoom } = useSocket();
 
   const userOnline = onlineUsers?.find(
@@ -65,15 +68,24 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
     }
   };
 
+  const conversationExists = (conversationId: string) =>
+    existingConversations?.some(
+      (conversation) => conversation.conversationId === conversationId
+    );
+
   const handleSendMessage = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter" || !inputValue) return;
 
-    const id = uuidv4();
+    if (!conversationExists(conversationId))
+      conversationMutation.mutate({
+        conversationId,
+        participantUserId: selectedConversationUser.userId!,
+      });
 
     const messageRequestBody: MessageBody = {
       // ID generated here for consistency during optimistic UI updates
-      id,
-      content: inputValue as string,
+      id: uuidv4(),
+      content: inputValue,
     };
 
     socket.emit("sendMessage", { roomId: conversationId, message: inputValue });

@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { AxiosError } from "axios";
-import { ConversationData, CachedConversation } from "@/interfaces";
+import {
+  ConversationData,
+  CachedConversation,
+  ConversationPayload,
+} from "@/interfaces";
 import { useSocket } from "@/lib/hooks";
-import { fetchConversationsRequest } from "../shared";
+import {
+  createConversationMutationFunction,
+  fetchConversationsRequest,
+} from "../shared";
 
 const updateConversation = (
   conversations: CachedConversation[],
@@ -30,7 +37,7 @@ export const useConversations = () => {
     queryFn: fetchConversationsRequest,
   });
 
-  const [conversations, setConversations] = useState<CachedConversation[]>([]);
+  const [conversations, setConversations] = useState<CachedConversation[]>();
   const { socket } = useSocket();
 
   useEffect(() => {
@@ -42,11 +49,13 @@ export const useConversations = () => {
       conversationId: string;
       content: string | null;
     }) => {
-      setConversations((prevConversations) =>
-        sortConversationsByDate(
+      setConversations((prevConversations) => {
+        if (!prevConversations) return;
+
+        return sortConversationsByDate(
           updateConversation(prevConversations, newMessage)
-        )
-      );
+        );
+      });
     };
 
     socket.on("receiveMessage", handleNewMessage);
@@ -56,9 +65,26 @@ export const useConversations = () => {
     };
   }, [socket]);
 
+  const conversationMutation = useMutation<
+    ConversationPayload,
+    AxiosError,
+    ConversationPayload
+  >(
+    (conversationData: ConversationPayload) =>
+      createConversationMutationFunction(conversationData),
+    {
+      onError: (error) => {
+        console.error("Failed to create conversation:", error);
+      },
+    }
+  );
+
   return {
+    initialConversations: data?.userConversations,
     conversations,
     conversationsLoading: isLoading,
     conversationsError: error,
+    setConversations,
+    conversationMutation,
   };
 };

@@ -1,5 +1,5 @@
 import prisma from "@/utils/prisma/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { getCurrentUserByEmail } from "@/lib/shared/queries/user";
 
@@ -8,7 +8,7 @@ export async function GET() {
     const session = await getServerSession();
     const sessionUser = session?.user;
 
-    if (!sessionUser || sessionUser.email === null)
+    if (!sessionUser || !sessionUser.email)
       return NextResponse.json({ message: "Forbidden", status: 401 });
 
     const currentUser = await getCurrentUserByEmail(
@@ -82,5 +82,67 @@ export async function GET() {
     );
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession();
+    const sessionUser = session?.user;
+
+    if (!sessionUser || !sessionUser.email)
+      return NextResponse.json({ message: "Forbidden", status: 401 });
+
+    const currentUser = await getCurrentUserByEmail(sessionUser.email);
+
+    if (!currentUser)
+      return NextResponse.json({ message: "User not found", status: 404 });
+
+    const { conversationId, participantUserId } = await request.json();
+
+    if (!participantUserId)
+      return NextResponse.json(
+        { message: "Participant user ID is required" },
+        { status: 400 }
+      );
+
+    const participant = await prisma.user.findUnique({
+      where: { userId: participantUserId },
+    });
+
+    if (!participant)
+      return NextResponse.json(
+        { message: "Participant user not found" },
+        { status: 404 }
+      );
+
+    const newConversation = await prisma.conversation.create({
+      data: {
+        id: conversationId,
+      },
+    });
+
+    await prisma.userConversation.createMany({
+      data: [
+        {
+          userId: currentUser.userId,
+          conversationId: newConversation.id,
+        },
+        {
+          userId: participant.userId,
+          conversationId: newConversation.id,
+        },
+      ],
+    });
+
+    return NextResponse.json(
+      { conversation: newConversation },
+      { status: 201 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

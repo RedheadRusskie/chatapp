@@ -6,7 +6,7 @@ import styles from "./ConversationCard.module.scss";
 
 interface ConversationCardProps {
   user: Partial<User>;
-  lastMessage: string;
+  lastMessage: string | null;
   updatedAt: string;
   onlineUsers: string[] | undefined;
   onClick: () => void;
@@ -56,7 +56,9 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
             <Text>{user.name}</Text>
             <Text color="#6F68A9">@{user.username}</Text>
           </Flex>
-          <Text color="#6F68A9">{truncateMessage(lastMessage)}</Text>
+          <Text color="#6F68A9">
+            {lastMessage ? truncateMessage(lastMessage) : null}
+          </Text>
         </Box>
         <Text
           position="absolute"

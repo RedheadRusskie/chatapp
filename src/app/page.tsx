@@ -11,8 +11,13 @@ import { useAddNewUser, useSocket } from "@/lib/hooks";
 
 export default function Home() {
   useAddNewUser();
-  const { conversations, conversationsLoading, conversationsError } =
-    useConversations();
+  const {
+    initialConversations,
+    conversations,
+    conversationsLoading,
+    conversationsError,
+    setConversations,
+  } = useConversations();
   const { selectedConversation, dispatch } = useConversationSelect();
   const { onlineUsers } = useSocket();
   const toast = useToast();
@@ -30,7 +35,7 @@ export default function Home() {
 
   const selectedConversationUser = useMemo(
     () =>
-      conversations.find(
+      conversations?.find(
         (conversation) =>
           conversation.conversationId ===
           selectedConversation.selectedConversationId
@@ -47,7 +52,10 @@ export default function Home() {
         margin="0 0.5em 1em 1em"
         h="95%"
       >
-        <UserSearchSelect />
+        <UserSearchSelect
+          conversations={conversations || []}
+          setConversations={setConversations}
+        />
         <Box overflowY="auto" h="70%">
           {conversationsLoading && (
             <Center h="80%">
@@ -67,7 +75,7 @@ export default function Home() {
                 user={conversation.user}
                 lastMessage={conversation.lastMessage}
                 onlineUsers={onlineUsers}
-                updatedAt={conversation.updatedAt}
+                updatedAt={conversation.updatedAt as string}
               />
             ))}
         </Box>
@@ -77,6 +85,7 @@ export default function Home() {
           <ConversationSection
             conversationId={selectedConversation.selectedConversationId}
             selectedConversationUser={selectedConversationUser.user}
+            existingConversations={initialConversations || []}
             onlineUsers={onlineUsers}
           />
         )}

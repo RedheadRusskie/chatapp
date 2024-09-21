@@ -1,15 +1,15 @@
 import { User } from "@prisma/client";
 
+export interface UserConversations {
+  conversationId: string;
+  user: Partial<User>;
+  lastMessage: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ConversationData {
-  userConversations: [
-    {
-      conversationId: string;
-      user: Partial<User>;
-      lastMessage: string;
-      createdAt: string;
-      updatedAt: string;
-    }
-  ];
+  userConversations: UserConversations[];
 }
 
 export interface MessageData {
@@ -37,6 +37,11 @@ export interface MessageBody {
 export interface CachedConversation {
   conversationId: string;
   user: Partial<User>;
-  lastMessage: string;
-  updatedAt: string;
+  lastMessage: string | null;
+  updatedAt: Date | string;
+}
+
+export interface ConversationPayload {
+  conversationId: string;
+  participantUserId: string;
 }
