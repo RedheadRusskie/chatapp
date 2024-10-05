@@ -150,14 +150,7 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
           </>
         )}
       </Box>
-      <Box
-        p="0.5em 1em"
-        position="absolute"
-        bottom="10px"
-        left="0"
-        right="0"
-        zIndex="999"
-      >
+      <Box p="0.5em 1em" position="absolute" bottom="10px" left="0" right="0">
         <Flex
           maxW="40em"
           w="100%"

@@ -7,6 +7,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Portal,
 } from "@chakra-ui/react";
 import Cookies from "js-cookie";
 import styles from "./AvatarMenu.module.scss";
@@ -32,11 +33,13 @@ export const AvatarMenu: React.FC<AvatarMenuProps> = ({ session }) => {
             src={session?.user?.image || undefined}
           />
         </MenuButton>
-        <MenuList className={styles.menuList}>
-          <MenuItem className={styles.menuItem} onClick={handleSignOut}>
-            Sign out
-          </MenuItem>
-        </MenuList>
+        <Portal>
+          <MenuList className={styles.menuList}>
+            <MenuItem className={styles.menuItem} onClick={handleSignOut}>
+              Sign out
+            </MenuItem>
+          </MenuList>
+        </Portal>
       </Menu>
     </Box>
   ) : (
