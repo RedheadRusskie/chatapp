@@ -1,11 +1,10 @@
-import { User } from "@prisma/client";
 import axios, { AxiosError } from "axios";
-
-const baseEndpoint = process.env.NEXT_PUBLIC_BASE_URL;
+import axiosInstance from "@/utils/axios-instance";
+import { User } from "@prisma/client";
 
 export const fetchUserRequest = async (): Promise<User> => {
   try {
-    const response = await axios.get(`${baseEndpoint}/api/user`, {});
+    const response = await axiosInstance.get("/user");
 
     return response.data;
   } catch (error: unknown) {
@@ -19,7 +18,7 @@ export const fetchUserRequest = async (): Promise<User> => {
 
 export const postUserRequest = async () => {
   try {
-    const response = await axios.post(`${baseEndpoint}/api/user`, null, {});
+    const response = await axiosInstance.post("/user", null);
 
     return response.data;
   } catch (error: unknown) {
@@ -36,7 +35,7 @@ export const searchUsersRequest = async (
   page: number
 ): Promise<User[]> => {
   try {
-    const response = await axios.get(`${baseEndpoint}/api/search-user`, {
+    const response = await axiosInstance.get("/search-user", {
       params: { query, skip: page * 10, take: 10 },
     });
 

@@ -1,13 +1,12 @@
 import axios, { AxiosError } from "axios";
+import axiosInstance from "@/utils/axios-instance";
 
 import { ConversationData, ConversationPayload } from "@/interfaces";
-
-const baseEndpoint = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const fetchConversationsRequest =
   async (): Promise<ConversationData> => {
     try {
-      const response = await axios.get(`${baseEndpoint}/api/conversation`);
+      const response = await axiosInstance.get("/conversation");
 
       return response.data;
     } catch (error: unknown) {
@@ -23,8 +22,8 @@ export const createConversationMutationFunction = async (
   conversationData: ConversationPayload
 ) => {
   try {
-    const response = await axios.post(
-      `${baseEndpoint}/api/conversation`,
+    const response = await axiosInstance.post(
+      "/conversation",
       conversationData
     );
 

@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import axiosInstance from "@/utils/axios-instance";
 import { MessageBody, MessageResponse } from "@/interfaces";
 
 export const fetchCurrentMessagesRequest = async (
@@ -6,7 +7,7 @@ export const fetchCurrentMessagesRequest = async (
   page: number
 ): Promise<MessageResponse> => {
   try {
-    const response = await axios.get(`/api/messages/${conversationId}`, {
+    const response = await axiosInstance.get(`messages/${conversationId}`, {
       params: { skip: page * 10, take: 10 },
     });
 
@@ -25,8 +26,8 @@ export const messageMutationFunction = async (
   messageData: MessageBody
 ) => {
   try {
-    const response = await axios.post(
-      `/api/messages/${conversationId}`,
+    const response = await axiosInstance.post(
+      `/messages/${conversationId}`,
       messageData
     );
 
@@ -36,8 +37,6 @@ export const messageMutationFunction = async (
       const axiosError: AxiosError = error;
 
       throw new Error(axiosError.message);
-    } else {
-      throw new Error("An unknown error occurred");
-    }
+    } else throw new Error("An unknown error occurred");
   }
 };
