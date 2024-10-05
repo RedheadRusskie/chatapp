@@ -2,6 +2,7 @@ import React from "react";
 import { Avatar, AvatarBadge, Box, Flex, Text } from "@chakra-ui/react";
 import { User } from "@prisma/client";
 import { formatDate } from "@/utils/formatDate";
+import { cryptrInstance } from "@/lib/cryptr/cryptr";
 import styles from "./ConversationCard.module.scss";
 
 interface ConversationCardProps {
@@ -20,11 +21,12 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
   onClick,
 }) => {
   const formattedDate = formatDate(updatedAt);
-
   const truncateMessage = (message: string) =>
-    message ? message.substring(0, 10).concat("..") : null;
-
+    message ? message?.substring(0, 10).concat("..") : null;
   const userOnline = onlineUsers?.find((userId) => userId === user.userId);
+
+  const decryptMessage = (content: string) =>
+    content ? cryptrInstance.decrypt(lastMessage as string) : content;
 
   return (
     <Box
@@ -57,7 +59,7 @@ export const ConversationCard: React.FC<ConversationCardProps> = ({
             <Text color="#6F68A9">@{user.username}</Text>
           </Flex>
           <Text color="#6F68A9">
-            {lastMessage ? truncateMessage(lastMessage) : null}
+            {lastMessage ? truncateMessage(decryptMessage(lastMessage)) : null}
           </Text>
         </Box>
         <Text

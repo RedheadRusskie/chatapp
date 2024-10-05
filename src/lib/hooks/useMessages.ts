@@ -3,6 +3,7 @@ import { useInfiniteQuery, useMutation } from "react-query";
 import { AxiosError } from "axios";
 import { MessageBody, MessageData, MessageResponse } from "@/interfaces";
 import { useSocket } from "@/lib/hooks";
+import { cryptrInstance } from "@/lib/cryptr/cryptr";
 import {
   fetchCurrentMessagesRequest,
   messageMutationFunction,
@@ -13,8 +14,13 @@ const messageQueryKeys = {
 };
 
 export const useMessages = (conversationId: string) => {
+  const [encryptedMessage, setEncryptedMessage] = useState<MessageBody>();
+  const [partialNewMessage, setPartialNewMessage] = useState<MessageData>();
+  const [optimisticMessageIds, setOptimisticMessageIds] =
+    useState<Set<string>>();
   const { socket } = useSocket();
   const user = sessionStorage.getItem("user");
+  const parsedUser = JSON.parse(user as string).user;
 
   const { data, isLoading, error, fetchNextPage, hasNextPage } =
     useInfiniteQuery<MessageResponse, AxiosError>(
@@ -34,6 +40,12 @@ export const useMessages = (conversationId: string) => {
     () =>
       data?.pages
         .flatMap((page) => page.messages)
+        .map((message) => ({
+          ...message,
+          content: message.content
+            ? cryptrInstance.decrypt(message.content)
+            : message.content,
+        }))
         .sort(
           (a, b) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -50,34 +62,80 @@ export const useMessages = (conversationId: string) => {
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
     };
-  }, [conversationId]);
+  }, [conversationId, currentMessages]);
 
   useEffect(() => {
     setCurrentMessages(messages);
   }, [messages]);
 
+  useEffect(() => {
+    if (encryptedMessage && partialNewMessage) {
+      socket.emit("sendMessage", {
+        roomId: conversationId,
+        messageData: {
+          ...partialNewMessage,
+          conversationId: conversationId,
+          content: encryptedMessage.content,
+        },
+      });
+
+      messageMutation.mutate({
+        id: encryptedMessage.id,
+        content: encryptedMessage.content,
+      });
+    }
+  }, [encryptedMessage, partialNewMessage]);
+
   const handleReceiveMessage = (messageData: MessageData) => {
     if (!messageData) return;
 
-    if (messageData.conversationId === conversationId)
+    if (
+      messageData.conversationId === conversationId &&
+      !optimisticMessageIds?.has(messageData.id) &&
+      messageData.content !== null
+    ) {
       setCurrentMessages((prevMessages) => {
         const messageExists = prevMessages.find(
           (message) => message.id === messageData.id
         );
 
-        return !messageExists ? [...prevMessages, messageData] : prevMessages;
+        if (messageExists) return prevMessages;
+
+        const decryptedMessage = {
+          ...messageData,
+          content: messageData.content
+            ? cryptrInstance.decrypt(messageData.content)
+            : messageData.content,
+        };
+
+        return [...prevMessages, decryptedMessage];
       });
+    }
   };
 
-  const createMessage = (messageData: MessageData) => {
-    setCurrentMessages((prevMessages) => [...prevMessages, messageData]);
+  const createMessage = (messageData: MessageBody) => {
+    if (!messageData.content || messageData.content.trim() === "" || !user)
+      return;
 
-    socket.emit("sendMessage", {
-      roomId: conversationId,
-      messageData: {
-        ...messageData,
-        conversationId: conversationId,
+    const newMessage: MessageData = {
+      id: messageData.id,
+      content: messageData.content,
+      createdAt: new Date().toISOString(),
+      sender: {
+        name: parsedUser.name,
+        userId: parsedUser.userId,
+        username: parsedUser.username,
+        profilePicture: parsedUser.profilePicture,
       },
+    };
+
+    setCurrentMessages((prevMessages) => [...prevMessages, newMessage]);
+    setPartialNewMessage(newMessage);
+    setOptimisticMessageIds((prevIds) => new Set(prevIds).add(newMessage.id));
+
+    setEncryptedMessage({
+      id: messageData.id,
+      content: cryptrInstance.encrypt(messageData.content),
     });
   };
 
@@ -85,25 +143,6 @@ export const useMessages = (conversationId: string) => {
     (messageData: MessageBody) =>
       messageMutationFunction(conversationId, messageData),
     {
-      onMutate: async (messageData) => {
-        if (user === null) return;
-
-        const parsedUser = JSON.parse(user).user;
-
-        const newMessage: MessageData = {
-          id: messageData.id,
-          content: messageData.content,
-          createdAt: new Date().toISOString(),
-          sender: {
-            name: parsedUser.name,
-            userId: parsedUser.userId,
-            username: parsedUser.username,
-            profilePicture: parsedUser.profilePicture,
-          },
-        };
-
-        createMessage(newMessage);
-      },
       onError: (error: AxiosError) => {
         console.error("Error sending message:", error.message);
       },
@@ -117,5 +156,6 @@ export const useMessages = (conversationId: string) => {
     fetchNextPage,
     hasNextPage,
     messageMutation,
+    createMessage,
   };
 };

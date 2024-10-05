@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import prisma from "@/utils/prisma/db";
 import { getCurrentUserByEmail } from "@/lib/shared/queries/user";
 import { MessageBody, MessageData } from "@/interfaces";
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { conversationId: string } }
 ) {
   try {
@@ -62,7 +62,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { conversationId: string } }
 ) {
   try {

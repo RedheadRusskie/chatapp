@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useMessages } from "@/lib/hooks/useMessages";
+import { useConversations, useSocket } from "@/lib/hooks";
 import { User } from "@prisma/client";
 import {
   Avatar,
@@ -10,11 +11,9 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { MessageBox } from "../MessageBox/MessageBox";
 import { MessageBody, UserConversations } from "@/interfaces";
-import { socket } from "@/lib/socket/socket";
 import { v4 as uuidv4 } from "uuid";
-import { useConversations, useSocket } from "@/lib/hooks";
+import { MessageBox } from "../MessageBox/MessageBox";
 
 interface ConversationSectionProps {
   conversationId: string;
@@ -37,7 +36,7 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
     messagesLoading,
     fetchNextPage,
     hasNextPage,
-    messageMutation,
+    createMessage,
   } = useMessages(conversationId);
   const { conversationMutation } = useConversations();
   const { isConnected, joinRoom } = useSocket();
@@ -74,7 +73,7 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
     );
 
   const handleSendMessage = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== "Enter" || !inputValue) return;
+    if (event.key !== "Enter" || !inputValue?.trim()) return;
 
     if (!conversationExists(conversationId))
       conversationMutation.mutate({
@@ -85,11 +84,10 @@ export const ConversationSection: React.FC<ConversationSectionProps> = ({
     const messageRequestBody: MessageBody = {
       // ID generated here for consistency during optimistic UI updates
       id: uuidv4(),
-      content: inputValue,
+      content: inputValue.trim(),
     };
 
-    socket.emit("sendMessage", { roomId: conversationId, message: inputValue });
-    messageMutation.mutate(messageRequestBody);
+    createMessage(messageRequestBody);
     setInputValue("");
   };
 
