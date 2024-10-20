@@ -35,7 +35,7 @@ export const searchUsersRequest = async (
   page: number
 ): Promise<User[]> => {
   try {
-    const response = await axiosInstance.get("/search-user", {
+    const response = await axiosInstance.get("/user", {
       params: { query, skip: page * 10, take: 10 },
     });
 

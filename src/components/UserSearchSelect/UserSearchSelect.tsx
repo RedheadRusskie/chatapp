@@ -5,7 +5,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { useDebouncedState, useSearchUser } from "@/lib/hooks";
+import { useDebouncedState, useUser } from "@/lib/hooks";
 import { Search2Icon, WarningIcon } from "@chakra-ui/icons";
 import {
   Avatar,
@@ -40,11 +40,11 @@ export const UserSearchSelect: React.FC<UserSearchSelectProps> = ({
   const toast = useToast();
   const {
     usersQueryResult,
-    isUsersQueryLoading,
-    usersQueryError,
+    userQueryLoading,
+    userQueryError,
     fetchNextPage,
     hasNextPage,
-  } = useSearchUser(query);
+  } = useUser(query);
   const { dispatch } = useConversationSelect();
 
   const handleClickOutside = useCallback(
@@ -67,9 +67,9 @@ export const UserSearchSelect: React.FC<UserSearchSelectProps> = ({
     };
   }, [handleClickOutside, isOpen]);
 
-  if (usersQueryError) {
+  if (userQueryError) {
     toast({
-      title: usersQueryError.message,
+      title: userQueryError.message,
       status: "error",
       duration: 4000,
       isClosable: true,
@@ -157,7 +157,7 @@ export const UserSearchSelect: React.FC<UserSearchSelectProps> = ({
             mr="7px"
             placeholder="Search conversations"
           />
-          {isUsersQueryLoading ? (
+          {userQueryLoading ? (
             <Spinner size="sm" color="var(--light-main)" />
           ) : (
             <Search2Icon height="100%" color="var(--light-main)" />
@@ -180,7 +180,7 @@ export const UserSearchSelect: React.FC<UserSearchSelectProps> = ({
           backgroundColor="var(--bg-main)"
           onScroll={handleScroll}
         >
-          {!isUsersQueryLoading && usersQueryResult.length === 0 && (
+          {!userQueryLoading && usersQueryResult.length === 0 && (
             <Center color="white" pt="1em">
               <Flex
                 gap="0.5em"
@@ -205,7 +205,7 @@ export const UserSearchSelect: React.FC<UserSearchSelectProps> = ({
                 onClick={() => handleClickUser(user)}
               >
                 <Flex gap="0.5em">
-                  <Avatar src={user.profilePicture as string} size="xs" />
+                  <Avatar src={user.profilePicture ?? undefined} size="xs" />
                   <Text>{user.name}</Text>
                   <Text color="var(--light-main)">@{user.username}</Text>
                 </Flex>
