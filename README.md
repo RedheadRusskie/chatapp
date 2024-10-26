@@ -12,7 +12,7 @@
 
 - [Installation](#installation)
 - [Database](#database)
-- [Authentication](#environment)
+- [Environment](#environment)
 - [Usage](#usage)
 
 ## Installation
