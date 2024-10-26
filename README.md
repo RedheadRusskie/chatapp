@@ -65,7 +65,7 @@ yarn server
 yarn dev
 ```
 
-2. Run unit tests:
+3. Run unit tests:
 
 ```bash
 yarn test
