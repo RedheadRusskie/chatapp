@@ -11,14 +11,14 @@ vi.mock("next-auth", () => ({
   getServerSession: getServerSession,
 }));
 
-describe("GET /api/user", () => {
-  const query = "john";
+const QUERY = "john";
 
+describe("GET /api/user", () => {
   it("Should return 401 if no session exists", async () => {
     getServerSession.mockResolvedValue(null);
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/user?query=${query}&skip=0&take=10`
+      `http://localhost:3000/api/user?query=${QUERY}&skip=0&take=10`
     );
 
     const response = await GET(mockRequest);
@@ -93,7 +93,7 @@ describe("GET /api/user", () => {
     prismaMock.user.findMany.mockResolvedValue([responseBody]);
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/user?query=${query}&skip=0&take=10`
+      `http://localhost:3000/api/user?query=${QUERY}&skip=0&take=10`
     );
 
     const response = await GET(mockRequest);
@@ -107,7 +107,7 @@ describe("GET /api/user", () => {
     });
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/user?query=${query}`
+      `http://localhost:3000/api/user?query=${QUERY}`
     );
 
     const response = await GET(mockRequest);

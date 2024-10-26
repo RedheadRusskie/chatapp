@@ -1,10 +1,10 @@
 "use client";
 
 import { ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { Box, ChakraProvider } from "@chakra-ui/react";
 import { AuthProvider } from "@/context/AuthContext";
 import { ConversationProvider } from "@/context/ConversationContext";
-import { Box, ChakraProvider } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "react-query";
 
 interface MainLayoutProps {
   children: ReactNode;

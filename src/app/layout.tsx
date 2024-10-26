@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import SessionProvider from "@/auth/SessionProvider";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Header from "../layout/Header/Header";
 import MainLayout from "@/layout/MainLayout";
-
-const inter = Inter({ subsets: ["latin"] });
+import Header from "../layout/Header/Header";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "MyChat",

@@ -17,18 +17,18 @@ vi.mock("@/lib/shared/queries/user", () => ({
   getCurrentUserByEmail: getCurrentUserByEmail,
 }));
 
-const conversationId = "efb73b13-dea5-4ba2-b004-8084092da1c4";
+const CONVERSATION_ID = "efb73b13-dea5-4ba2-b004-8084092da1c4";
 
 describe("GET /api/messages", () => {
   it("Should return 401 if no session exists", async () => {
     getServerSession.mockResolvedValue(null);
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/messages?conversationId=${conversationId}`
+      `http://localhost:3000/api/messages?conversationId=${CONVERSATION_ID}`
     );
 
     const response = await GET(mockRequest, {
-      params: { conversationId },
+      params: { conversationId: CONVERSATION_ID },
     });
 
     const responseJson = await response.json();
@@ -48,11 +48,11 @@ describe("GET /api/messages", () => {
     getCurrentUserByEmail.mockResolvedValue(null);
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/messages?conversationId=${conversationId}`
+      `http://localhost:3000/api/messages?conversationId=${CONVERSATION_ID}`
     );
 
     const response = await GET(mockRequest, {
-      params: { conversationId },
+      params: { conversationId: CONVERSATION_ID },
     });
 
     const responseJson = await response.json();
@@ -88,7 +88,7 @@ describe("GET /api/messages", () => {
 
     prismaMock.directMessage.findMany.mockResolvedValue([
       {
-        conversationId,
+        conversationId: CONVERSATION_ID,
         id: requestData.id,
         content: requestData.content,
         createdAt: requestData.createdAt,
@@ -98,11 +98,11 @@ describe("GET /api/messages", () => {
     ]);
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/messages?conversationId=${conversationId}`
+      `http://localhost:3000/api/messages?conversationId=${CONVERSATION_ID}`
     );
 
     const response = await GET(mockRequest, {
-      params: { conversationId },
+      params: { conversationId: CONVERSATION_ID },
     });
 
     expect(response.status).toBe(200);
@@ -118,7 +118,7 @@ describe("GET /api/messages", () => {
     );
 
     const response = await GET(mockRequest, {
-      params: { conversationId },
+      params: { conversationId: CONVERSATION_ID },
     });
 
     expect(response.status).toBe(500);
@@ -130,7 +130,7 @@ describe("POST /api/messages", () => {
     getServerSession.mockResolvedValue(null);
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/messages?conversationId=${conversationId}`,
+      `http://localhost:3000/api/messages?conversationId=${CONVERSATION_ID}`,
       {
         method: "POST",
         body: JSON.stringify({
@@ -141,7 +141,7 @@ describe("POST /api/messages", () => {
     );
 
     const response = await POST(mockRequest, {
-      params: { conversationId },
+      params: { conversationId: CONVERSATION_ID },
     });
 
     const responseJson = await response.json();
@@ -161,7 +161,7 @@ describe("POST /api/messages", () => {
     getCurrentUserByEmail.mockResolvedValue(null);
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/messages?conversationId=${conversationId}`,
+      `http://localhost:3000/api/messages?conversationId=${CONVERSATION_ID}`,
       {
         method: "POST",
         body: JSON.stringify({
@@ -172,7 +172,7 @@ describe("POST /api/messages", () => {
     );
 
     const response = await POST(mockRequest, {
-      params: { conversationId },
+      params: { conversationId: CONVERSATION_ID },
     });
 
     const responseJson = await response.json();
@@ -207,7 +207,7 @@ describe("POST /api/messages", () => {
     };
 
     prismaMock.directMessage.create.mockResolvedValue({
-      conversationId,
+      conversationId: CONVERSATION_ID,
       id: requestBody.id,
       content: requestBody.content,
       createdAt: new Date(),
@@ -216,13 +216,13 @@ describe("POST /api/messages", () => {
     });
 
     prismaMock.conversation.update.mockResolvedValue({
-      id: conversationId,
+      id: CONVERSATION_ID,
       lastUpdated: new Date(),
       createdAt: new Date("2024-10-15 20:58:34.246"),
     });
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/messages?conversationId=${conversationId}`,
+      `http://localhost:3000/api/messages?conversationId=${CONVERSATION_ID}`,
       {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -230,7 +230,7 @@ describe("POST /api/messages", () => {
     );
 
     const response = await POST(mockRequest, {
-      params: { conversationId },
+      params: { conversationId: CONVERSATION_ID },
     });
 
     expect(response.status).toBe(201);
@@ -248,7 +248,7 @@ describe("POST /api/messages", () => {
     };
 
     const mockRequest = new NextRequest(
-      `http://localhost:3000/api/messages?conversationId=${conversationId}`,
+      `http://localhost:3000/api/messages?conversationId=${CONVERSATION_ID}`,
       {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -256,7 +256,7 @@ describe("POST /api/messages", () => {
     );
 
     const response = await POST(mockRequest, {
-      params: { conversationId },
+      params: { conversationId: CONVERSATION_ID },
     });
 
     const responseJson = await response.json();
